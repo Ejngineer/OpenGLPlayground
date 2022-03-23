@@ -1,0 +1,31 @@
+#ifndef __SHADER_H__
+#define __SHADER_H__
+
+#include "glad/glad.h"
+
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+
+#include <glm.hpp>
+#include <gtc/matrix_transform.hpp>
+#include <gtc/type_ptr.hpp>
+
+class Shader {
+private:
+	//Program ID
+	unsigned int ID;
+public:
+	Shader(const char* vertexPath, const char* fragmentPath);
+	void use();
+	void SetBool(const std::string& name, bool value) const;
+	void setInt(const std::string& name, int value) const;
+	void setFloat(const std::string& name, float value) const;
+	void setFloat4(const std::string& name, float f0, float f1, float f2, float f3) const;
+	void setMat4f(const std::string& name, glm::mat4 transform) const;
+	void setVec3f(const std::string& name, glm::vec3 color);
+	unsigned int getID() const;
+};
+
+#endif
