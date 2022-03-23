@@ -221,7 +221,7 @@ int main(void)
 
 		float lightMove = 2*sin(glfwGetTime());
 
-		glm::vec3 lightPos(lightMove, 1.0f, 2.0f);
+		glm::vec3 lightPos(1.0f, 0.0f, 2.0f);
 
 		glm::mat4 lightmodel = glm::mat4(1.0f);
 		lightmodel = glm::translate(lightmodel, lightPos);
@@ -235,6 +235,7 @@ int main(void)
 
 		/*Object model matrix*/
 		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0f));
 
 		/*object/light view*/
 		glm::mat4 view = glm::mat4(1.0f);
@@ -260,6 +261,7 @@ int main(void)
 		ObjectShader.setVec3f("lightColor", LightSource);
 		ObjectShader.setVec3f("objectColor", Toy);
 		ObjectShader.setVec3f("lightPos", lightPos);
+		ObjectShader.setVec3f("viewPos", camera.GetPosition());
 
 		ObjectShader.setMat4f("model", model);
 		ObjectShader.setMat4f("view", view);
