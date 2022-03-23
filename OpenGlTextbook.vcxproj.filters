@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Src\main.cpp">
+    <ClCompile Include="Src\app.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Src\glad.c">
@@ -86,6 +86,12 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Textures\awesomeface.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Textures\container2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Textures\container2_specular.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

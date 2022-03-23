@@ -1,8 +1,10 @@
-#include <iostream>
-#include "Shader.h"
-#include "Camera.h"
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include "VertexArray.h"
 #include "VertexBuffer.h"
+#include "Shader.h"
+#include "Camera.h"
+#include "Texture.h"
 
 /*Globals*/
 Camera camera;
@@ -121,44 +123,51 @@ int main(void)
 	/*Capture mouse in window*/
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+	glEnable(GL_TEXTURE_2D);
+
 	float vertices[] = {
 		// positions // normals // texture coords
-	   -0.5f,-0.5f,-0.5f, 0.0f, 0.0f,-1.0f, 0.0f, 0.0f,
-		0.5f,-0.5f,-0.5f, 0.0f, 0.0f,-1.0f, 1.0f, 0.0f,
-		0.5f, 0.5f,-0.5f, 0.0f, 0.0f,-1.0f, 1.0f, 1.0f,
-		0.5f, 0.5f,-0.5f, 0.0f, 0.0f,-1.0f, 1.0f, 1.0f,
-	   -0.5f, 0.5f,-0.5f, 0.0f, 0.0f,-1.0f, 0.0f, 1.0f,
-	   -0.5f,-0.5f,-0.5f, 0.0f, 0.0f,-1.0f, 0.0f, 0.0f,
-	   -0.5f,-0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-		0.5f,-0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-		0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-	   -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-	   -0.5f,-0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-	   -0.5f, 0.5f, 0.5f,-1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-	   -0.5f, 0.5f,-0.5f,-1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-	   -0.5f,-0.5f,-0.5f,-1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-	   -0.5f,-0.5f,-0.5f,-1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-	   -0.5f,-0.5f, 0.5f,-1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-	   -0.5f, 0.5f, 0.5f,-1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-		0.5f, 0.5f,-0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-		0.5f,-0.5f,-0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-		0.5f,-0.5f,-0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-		0.5f,-0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-		0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-	   -0.5f,-0.5f,-0.5f, 0.0f,-1.0f, 0.0f, 0.0f, 1.0f,
-		0.5f,-0.5f,-0.5f, 0.0f,-1.0f, 0.0f, 1.0f, 1.0f,
-		0.5f,-0.5f, 0.5f, 0.0f,-1.0f, 0.0f, 1.0f, 0.0f,
-		0.5f,-0.5f, 0.5f, 0.0f,-1.0f, 0.0f, 1.0f, 0.0f,
-	   -0.5f,-0.5f, 0.5f, 0.0f,-1.0f, 0.0f, 0.0f, 0.0f,
-	   -0.5f,-0.5f,-0.5f, 0.0f,-1.0f, 0.0f, 0.0f, 1.0f,
-	   -0.5f, 0.5f,-0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-		0.5f, 0.5f,-0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-		0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-	   -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-	   -0.5f, 0.5f, -0.5f, 0.0f,1.0f, 0.0f, 0.0f, 1.0f
+	    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
+
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
 	};
 
 	glm::vec3 cubePositions[] = {
@@ -196,21 +205,19 @@ int main(void)
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 	objVAO.UnBind();
-	//VBO.UnBind();
-
-	VertexArray VAOarr[] = {lightVAO, objVAO};
+	VBO.UnBind();
 
 	Shader lightShader("Shaders/LightVert.glsl", "Shaders/LightFrag.glsl");
-
-
-	glm::vec3 LightSource(1.0f, 1.0f, 1.0f);
-	glm::vec3 Toy(1.0f, 0.5f, 0.31f);
-	glm::vec3 result = LightSource * Toy;
-
 	Shader ObjectShader("Shaders/ObjectVert.glsl", "Shaders/ObjectFrag.glsl");
-	
-	glm::vec3 Colors[] = {LightSource, result}; 
 
+	Texture Cont;
+	Cont.EnableVertFlip();
+	Cont.LoadTexture("Textures/container2.png");
+
+	Texture Cont1;
+	Cont1.LoadTexture("Textures/container2_specular.png");
+
+	
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
@@ -221,21 +228,21 @@ int main(void)
 
 		float lightMove = 2*sin(glfwGetTime());
 
-		glm::vec3 lightPos(1.0f, 0.0f, 2.0f);
+		glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
 		glm::mat4 lightmodel = glm::mat4(1.0f);
 		lightmodel = glm::translate(lightmodel, lightPos);
 		lightmodel = glm::scale(lightmodel, glm::vec3(0.2f));
 
 		/* Render here */
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		ProcessKeyInput(window, deltaTime);
 
 		/*Object model matrix*/
 		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0f));
+		//model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
 
 		/*object/light view*/
 		glm::mat4 view = glm::mat4(1.0f);
@@ -244,7 +251,36 @@ int main(void)
 		/*object/light projection*/
 		glm::mat4 projection;
 		projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.0f);
+
+		/*Object Rendering*/
+		objVAO.Bind();
+		ObjectShader.use();;
+		ObjectShader.setVec3f("light.position", lightPos);
+		ObjectShader.setVec3f("viewPos", camera.GetPosition());
+
+	
+		ObjectShader.setInt("material.diffuse", 0);
+		ObjectShader.setInt("material.specular", 1);
+		ObjectShader.setFloat1f("material.shininess", 64.0f);
+
+		ObjectShader.setVec3f("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f)); 
+		ObjectShader.setVec3f("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
+		ObjectShader.setVec3f("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
+		ObjectShader.setMat4f("model", model);
+		ObjectShader.setMat4f("view", view);
+		ObjectShader.setMat4f("projection", projection);
+
+		Cont.ActivateTexture(0);
+		Cont.Bind();
+
+		Cont1.ActivateTexture(1);
+		Cont1.Bind();
+
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		objVAO.UnBind();
 		
+		/*light rendering*/
 		lightVAO.Bind();
 		lightShader.use();
 
@@ -254,22 +290,6 @@ int main(void)
 
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		lightVAO.UnBind();
-
-		/*Object Rendering*/
-		objVAO.Bind();
-		ObjectShader.use();;
-		ObjectShader.setVec3f("lightColor", LightSource);
-		ObjectShader.setVec3f("objectColor", Toy);
-		ObjectShader.setVec3f("lightPos", lightPos);
-		ObjectShader.setVec3f("viewPos", camera.GetPosition());
-
-		ObjectShader.setMat4f("model", model);
-		ObjectShader.setMat4f("view", view);
-		ObjectShader.setMat4f("projection", projection);
-
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		objVAO.UnBind();
-		
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);

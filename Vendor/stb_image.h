@@ -363,14 +363,12 @@ RECENT REVISION HISTORY:
 //    huge block of memory and spend disproportionate time decoding it. By
 //    default this is set to (1 << 24), which is 16777216, but that's still
 //    very big.
-
+#pragma once
 #ifndef STBI_NO_STDIO
 #include <stdio.h>
 #endif // STBI_NO_STDIO
 
 #define STBI_VERSION 1
-
-#define STB_IMAGE_IMPLEMENTATION
 
 enum
 {

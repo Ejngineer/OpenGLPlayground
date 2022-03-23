@@ -21,10 +21,11 @@ public:
 	void use();
 	void SetBool(const std::string& name, bool value) const;
 	void setInt(const std::string& name, int value) const;
-	void setFloat(const std::string& name, float value) const;
+	void setFloat1f(const std::string& name, float value) const;
 	void setFloat4(const std::string& name, float f0, float f1, float f2, float f3) const;
 	void setMat4f(const std::string& name, glm::mat4 transform) const;
-	void setVec3f(const std::string& name, glm::vec3 color);
+	void setVec3f(const std::string& name, glm::vec3 vec) const;
+	void setVec3f(const std::string& name, float f0, float f1, float f2) const;
 	unsigned int getID() const;
 };
 

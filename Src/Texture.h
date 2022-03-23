@@ -2,9 +2,6 @@
 #define __TEXTURE_H__
 
 #include <glad/glad.h>
-#include "stb_image.h"
-
-#include <iostream>
 
 class Texture
 {
@@ -18,6 +15,8 @@ public:
 	void ActivateTexture(int tex_idx);
 	void EnableVertFlip();
 	void DisableVertFlip();
+	void Bind();
+	void unBind();
 };
 
 #endif

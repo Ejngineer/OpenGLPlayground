@@ -152,7 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Src\glad.c" />
-    <ClCompile Include="Src\main.cpp" />
+    <ClCompile Include="Src\app.cpp" />
     <ClCompile Include="Src\Shader.cpp" />
     <ClCompile Include="Src\Texture.cpp" />
     <ClCompile Include="Src\VertexArray.cpp" />
@@ -184,6 +184,8 @@
   <ItemGroup>
     <Image Include="Textures\awesomeface.png" />
     <Image Include="Textures\container.jpg" />
+    <Image Include="Textures\container2.png" />
+    <Image Include="Textures\container2_specular.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
