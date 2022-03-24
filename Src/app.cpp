@@ -228,7 +228,7 @@ int main(void)
 
 		float lightMove = 2*sin(glfwGetTime());
 
-		glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+		glm::vec3 lightPos(-0.2f, -1.0f, -0.3f);
 
 		glm::mat4 lightmodel = glm::mat4(1.0f);
 		lightmodel = glm::translate(lightmodel, lightPos);
@@ -255,19 +255,24 @@ int main(void)
 		/*Object Rendering*/
 		objVAO.Bind();
 		ObjectShader.use();;
-		ObjectShader.setVec3f("light.position", lightPos);
+		ObjectShader.setVec3f("light.position", camera.GetPosition());
+		ObjectShader.setVec3f("light.direction", camera.GetFront());
+		ObjectShader.setFloat1f("light.cutoff", glm::cos(glm::radians(12.5f)));
+		ObjectShader.setFloat1f("light.outercutoff", glm::cos(glm::radians(17.5f)));
 		ObjectShader.setVec3f("viewPos", camera.GetPosition());
 
-	
+
 		ObjectShader.setInt("material.diffuse", 0);
 		ObjectShader.setInt("material.specular", 1);
-		ObjectShader.setFloat1f("material.shininess", 64.0f);
+		ObjectShader.setFloat1f("material.shininess", 32.0f);
 
-		ObjectShader.setVec3f("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f)); 
-		ObjectShader.setVec3f("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
+		ObjectShader.setVec3f("light.ambient", glm::vec3(0.1f, 0.1f, 0.1f));
+		ObjectShader.setVec3f("light.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
 		ObjectShader.setVec3f("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+		ObjectShader.setFloat1f("light.constant", 1.0f);
+		ObjectShader.setFloat1f("light.linear", 0.09f);
+		ObjectShader.setFloat1f("light.quadratic", 0.032f);
 
-		ObjectShader.setMat4f("model", model);
 		ObjectShader.setMat4f("view", view);
 		ObjectShader.setMat4f("projection", projection);
 
@@ -277,9 +282,15 @@ int main(void)
 		Cont1.ActivateTexture(1);
 		Cont1.Bind();
 
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		for (int i = 0; i < 10; i++)
+		{
+			model = glm::translate(model, cubePositions[i]);
+			model = glm::rotate(model, glm::radians(20.0f * i), glm::vec3(1.0f, 0.3f, 0.5f));
+			ObjectShader.setMat4f("model", model);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
 		objVAO.UnBind();
-		
+
 		/*light rendering*/
 		lightVAO.Bind();
 		lightShader.use();
