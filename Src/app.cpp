@@ -1,10 +1,11 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "stb_image.h"
 #include "VertexArray.h"
 #include "VertexBuffer.h"
 #include "Shader.h"
 #include "Camera.h"
-#include "Texture.h"
+#include "Model.h"
 
 /*Globals*/
 Camera camera;
@@ -217,16 +218,11 @@ int main(void)
 
 	Shader lightShader("Shaders/LightVert.glsl", "Shaders/LightFrag.glsl");
 	Shader ObjectShader("Shaders/ObjectVert.glsl", "Shaders/ObjectFrag.glsl");
+	Shader PackShader("Shaders/PackVert.glsl", "Shaders/FragShader.glsl");
+	stbi_set_flip_vertically_on_load(true);
 
+	Model ourModel("backpack/backpack.obj");
 
-	Texture Cont;
-	Cont.EnableVertFlip();
-	Cont.LoadTexture("Textures/container2.png");
-
-	Texture Cont1;
-	Cont1.LoadTexture("Textures/container2_specular.png");
-
-	
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
@@ -235,92 +231,24 @@ int main(void)
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		float lightMove = 2*sin(glfwGetTime());
-
-		glm::vec3 lightPos(-0.2f, -1.0f, -0.3f);
-		glm::mat4 lightmodel = glm::mat4(1.0f);
-		
-
-		/* Render here */
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		ProcessKeyInput(window, deltaTime);
 
-		/*Object model matrix*/
+		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		PackShader.use();
+
+		glm::mat4 projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.0f);
+		glm::mat4 view = camera.GetViewMatrix();
+		PackShader.setMat4f("projection", projection);
+		PackShader.setMat4f("view", view);
+
+		// render the loaded model
 		glm::mat4 model = glm::mat4(1.0f);
-		//model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-
-		/*object/light view*/
-		glm::mat4 view = glm::mat4(1.0f);
-		view = camera.GetViewMatrix();
-		
-		/*object/light projection*/
-		glm::mat4 projection;
-		projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.0f);
-
-		/*Object Rendering*/
-		objVAO.Bind();
-		ObjectShader.use();
-
-		ObjectShader.setVec3f("viewPos", camera.GetPosition());
-		ObjectShader.setVec3f("dirlight.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
-		ObjectShader.setVec3f("dirlight.ambient" , glm::vec3(0.05f, 0.05f,0.05f));
-		ObjectShader.setVec3f("dirlight.diffuse" , glm::vec3(0.4f, 0.4f, 0.4f));
-		ObjectShader.setVec3f("dirlight.specular" , glm::vec3(0.5f, 0.5f, 0.5f));
-
-		ObjectShader.setInt("material.diffuse", 0);
-		ObjectShader.setInt("material.specular", 1);
-		ObjectShader.setFloat1f("material.shininess", 32.0f);
-
-		ObjectShader.setMat4f("view", view);
-		ObjectShader.setMat4f("projection", projection);
-
-		Cont.ActivateTexture(0);
-		Cont.Bind();
-
-		Cont1.ActivateTexture(1);
-		Cont1.Bind();
-
-		for (int i = 0; i < 4; i++)
-		{
-			ObjectShader.setVec3f("plight[" + std::to_string(i) + "].Position", pointLightPositions[i]);
-			ObjectShader.setVec3f("plight[" + std::to_string(i) + "].ambient", glm::vec3(0.0f, 0.7f, 0.3f));
-			ObjectShader.setVec3f("plight[" + std::to_string(i) + "].diffuse", glm::vec3(0.7f, 0.7f, 0.7f));
-			ObjectShader.setVec3f("plight[" + std::to_string(i) + "].specular", glm::vec3(1.0f, 1.0f, 1.0f));
-			ObjectShader.setFloat1f("plight[" + std::to_string(i) + "].constant", 1.0f);
-			ObjectShader.setFloat1f("plight[" + std::to_string(i) + "].linear", 0.07f);
-			ObjectShader.setFloat1f("plight[" + std::to_string(i) + "].quadratic", 0.032f);
-		}
-
-		for (int i = 0; i < 10; i++)
-		{
-			model = glm::mat4(1.0f);
-			model = glm::translate(model, cubePositions[i]);
-			model = glm::rotate(model, glm::radians(20.0f * i), glm::vec3(1.0f, 0.3f, 0.5f));
-			ObjectShader.setMat4f("model", model);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
-		objVAO.UnBind();	
-
-		/*light rendering*/
-		lightVAO.Bind();
-		lightShader.use();
-		lightShader.setMat4f("view", view);
-		lightShader.setMat4f("projection", projection);
-
-		for (unsigned int i = 0; i < 4; i++)
-		{
-			lightmodel = glm::mat4(1.0f); 
-			lightmodel = glm::translate(lightmodel, pointLightPositions[i]);
-			lightmodel = glm::scale(lightmodel, glm::vec3(0.2f));
-			lightShader.setMat4f("model", lightmodel);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-			
-		}
-		lightVAO.UnBind();
-
-		/* Swap front and back buffers */
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+		PackShader.setMat4f("model", model);
+		ourModel.Draw(PackShader);
 		glfwSwapBuffers(window);
 
 		/* Poll for and process events */

@@ -2,11 +2,13 @@
 #define __TEXTURE_H__
 
 #include <glad/glad.h>
+#include <string>
 
 class Texture
 {
 private:
 	unsigned int m_ID;
+	std::string type;
 public:
 	Texture();
 	Texture(int num);
