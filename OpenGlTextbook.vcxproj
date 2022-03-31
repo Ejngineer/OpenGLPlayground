@@ -161,6 +161,7 @@
     <ClCompile Include="Src\Mesh.cpp" />
     <ClCompile Include="Src\Model.cpp" />
     <ClCompile Include="Src\Shader.cpp" />
+    <ClCompile Include="Src\Texture.cpp" />
     <ClCompile Include="Src\VertexArray.cpp" />
     <ClCompile Include="Src\VertexBuffer.cpp" />
   </ItemGroup>
@@ -251,6 +252,7 @@
     <ClInclude Include="Src\Model.h" />
     <ClInclude Include="Src\Mesh.h" />
     <ClInclude Include="Src\Shader.h" />
+    <ClInclude Include="Src\Texture.h" />
     <ClInclude Include="Src\VertexArray.h" />
     <ClInclude Include="Src\VertexBuffer.h" />
     <ClInclude Include="Src\Vendor\stb_image.h" />
@@ -275,6 +277,8 @@
     <None Include="Dependencies\assimp\lib\assimp-vc143-mtd.exp" />
     <None Include="Dependencies\assimp\lib\assimp-vc143-mtd.ilk" />
     <None Include="Dependencies\assimp\lib\assimp-vc143-mtd.pdb" />
+    <None Include="Shaders\CubeFrag.glsl" />
+    <None Include="Shaders\CubeVert.glsl" />
     <None Include="Shaders\FragShader.glsl" />
     <None Include="Shaders\LightFrag.glsl" />
     <None Include="Shaders\ObjectFrag.glsl" />
@@ -292,6 +296,8 @@
     <Image Include="Textures\container.jpg" />
     <Image Include="Textures\container2.png" />
     <Image Include="Textures\container2_specular.png" />
+    <Image Include="Textures\marble.jpg" />
+    <Image Include="Textures\metal.png" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="backpack\source_attribution.txt" />

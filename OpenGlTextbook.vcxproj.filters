@@ -39,6 +39,9 @@
     <ClCompile Include="Src\stb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\glad\include\glad\glad.h">
@@ -308,6 +311,9 @@
     <ClInclude Include="Dependencies\assimp\include\assimp\ZipArchiveIOSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="Dependencies\GLFW\lib-vc2022\glfw3.lib" />
@@ -351,6 +357,8 @@
     <None Include="backpack\backpack.mtl" />
     <None Include="Shaders\PackVert.glsl" />
     <None Include="Shaders\FragShader.glsl" />
+    <None Include="Shaders\CubeVert.glsl" />
+    <None Include="Shaders\CubeFrag.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\container.jpg">
@@ -378,6 +386,12 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="backpack\specular.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Textures\marble.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Textures\metal.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
