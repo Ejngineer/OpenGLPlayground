@@ -280,6 +280,8 @@
     <None Include="Shaders\CubeFrag.glsl" />
     <None Include="Shaders\CubeVert.glsl" />
     <None Include="Shaders\FragShader.glsl" />
+    <None Include="Shaders\FrameFrag.glsl" />
+    <None Include="Shaders\FrameVert.glsl" />
     <None Include="Shaders\LightFrag.glsl" />
     <None Include="Shaders\ObjectFrag.glsl" />
     <None Include="Shaders\LightVert.glsl" />
