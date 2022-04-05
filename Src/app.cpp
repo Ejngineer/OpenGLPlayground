@@ -128,60 +128,49 @@ int main(void)
 
 	glEnable(GL_TEXTURE_2D);
 
-	float BoxVertices[] = {
-		// back face
-		-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // bottom-left
-		0.5f, 0.5f, -0.5f, 1.0f, 1.0f, // top-right
-		0.5f, -0.5f, -0.5f, 1.0f, 0.0f, // bottom-right
-		0.5f, 0.5f, -0.5f, 1.0f, 1.0f, // top-right
-		-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // bottom-left
-		-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, // top-left
-		// front face
-		-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, // bottom-left
-		0.5f, -0.5f, 0.5f, 1.0f, 0.0f, // bottom-right
-		0.5f, 0.5f, 0.5f, 1.0f, 1.0f, // top-right
-		0.5f, 0.5f, 0.5f, 1.0f, 1.0f, // top-right
-		-0.5f, 0.5f, 0.5f, 0.0f, 1.0f, // top-left
-		-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, // bottom-left
-		// left face
-		-0.5f, 0.5f, 0.5f, 1.0f, 0.0f, // top-right
-		-0.5f, 0.5f, -0.5f, 1.0f, 1.0f, // top-left
-		-0.5f, -0.5f, -0.5f, 0.0f, 1.0f, // bottom-left
-		-0.5f, -0.5f, -0.5f, 0.0f, 1.0f, // bottom-left
-		-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, // bottom-right
-		-0.5f, 0.5f, 0.5f, 1.0f, 0.0f, // top-right
-		// right face
-		0.5f, 0.5f, 0.5f, 1.0f, 0.0f, // top-left
-		0.5f, -0.5f, -0.5f, 0.0f, 1.0f, // bottom-right
-		0.5f, 0.5f, -0.5f, 1.0f, 1.0f, // top-right
-		0.5f, -0.5f, -0.5f, 0.0f, 1.0f, // bottom-right
-		0.5f, 0.5f, 0.5f, 1.0f, 0.0f, // top-left
-		0.5f, -0.5f, 0.5f, 0.0f, 0.0f, // bottom-left
-		// bottom face
-		-0.5f, -0.5f, -0.5f, 0.0f, 1.0f, // top-right
-		0.5f, -0.5f, -0.5f, 1.0f, 1.0f, // top-left
-		0.5f, -0.5f, 0.5f, 1.0f, 0.0f, // bottom-left
-		0.5f, -0.5f, 0.5f, 1.0f, 0.0f, // bottom-left
-		-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, // bottom-right
-		-0.5f, -0.5f, -0.5f, 0.0f, 1.0f, // top-right
-		// top face
-		-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, // top-left
-		0.5f, 0.5f, 0.5f, 1.0f, 0.0f, // bottom-right
-		0.5f, 0.5f, -0.5f, 1.0f, 1.0f, // top-right
-		0.5f, 0.5f, 0.5f, 1.0f, 0.0f, // bottom-right
-		-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, // top-left
-		-0.5f, 0.5f, 0.5f, 0.0f, 0.0f // bottom-left
+	float cubeVertices[] = {
+		// positions          // normals
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 
-	};
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
 
-	float PlaneVertices[] = {
-		5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
-		-5.0f, -0.5f,  5.0f,  0.0f, 0.0f,
-		-5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
 
-		 5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
-		-5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
-		 5.0f, -0.5f, -5.0f,  2.0f, 2.0f
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
 	};
 
 	float skyboxVertices[] = {
@@ -243,29 +232,17 @@ int main(void)
 
 	/*Buffers*/
 	VertexArray VAO;
-	VertexBuffer BoxVBO(BoxVertices, sizeof(BoxVertices));
+	VertexBuffer BoxVBO(cubeVertices, sizeof(cubeVertices));
 	BoxVBO.Bind();
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
 	BoxVBO.UnBind();
 	VAO.UnBind();
-
-	VertexBuffer PlaneVBO(PlaneVertices, sizeof(PlaneVertices));
-	VertexArray PVAO;
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	PlaneVBO.UnBind();
-	PVAO.UnBind();
 
 	VertexArray SVAO;
 	SVAO.Bind();
@@ -275,10 +252,6 @@ int main(void)
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
 ////////////////////////////////////
 ///////////Shaders/////////////////
 //////////////////////////////////
@@ -286,17 +259,6 @@ int main(void)
 	
 	Shader SkyShader("Shaders/SkyVert.glsl", "Shaders/SkyFrag.glsl");
 	
-/////////////////////////////////
-/////////2D Textures////////////
-///////////////////////////////
-	Texture BoxTex;
-	BoxTex.Bind2D();
-	BoxTex.LoadTexture2D("Textures/container.jpg");
-
-	Texture PlaneTex;
-	PlaneTex.Bind2D();
-	PlaneTex.LoadTexture2D("Textures/metal.png");
-
 ////////////////////////////////
 /////////Cube Maps/////////////
 //////////////////////////////
@@ -306,7 +268,7 @@ int main(void)
 	CubeMap.LoadCubeMap(faces);
 
 	CubeShader.use();
-	CubeShader.setInt("texture1", 0);
+	CubeShader.setInt("cubeMap", 0);
 
 	SkyShader.use();
 	SkyShader.setInt("cubeMap", 0);
@@ -343,37 +305,20 @@ int main(void)
 		CubeShader.setMat4f("model", model);
 		CubeShader.setMat4f("view", view);
 		CubeShader.setMat4f("projection", projection);
+		CubeShader.setVec3f("camPos", camera.GetPosition());
 
 		VAO.Bind();
-		BoxTex.Bind2D();
-		BoxTex.ActivateTexture(0);
+		CubeMap.BindCM();
+		CubeMap.ActivateTexture(0);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		//glm::mat4 model(1.0f);
-		model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-		CubeShader.setMat4f("model", model);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		VAO.UnBind();
-		PVAO.Bind();
-		PlaneTex.Bind2D();
-		PlaneTex.ActivateTexture(0);
-		model = glm::mat4(1.0f);
-		CubeShader.setMat4f("model", model);
-		//glDisable(GL_CULL_FACE);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-		PVAO.UnBind();
-
-		
+	
 		SkyShader.use();
 		glDepthFunc(GL_LEQUAL);
 		
 		view = glm::mat4(glm::mat3(view));
 
-		SkyShader.setMat4f("model", model1);
 		SkyShader.setMat4f("projection", projection);
 		SkyShader.setMat4f("view", view);
-		SkyShader.setVec3f("camPos", camera.GetPosition());
 
 		SVAO.Bind();
 		CubeMap.BindCM();
