@@ -3,6 +3,7 @@
 
 #include <glad/glad.h>
 #include <string>
+#include <vector>
 
 class Texture
 {
@@ -13,11 +14,13 @@ public:
 	Texture();
 	Texture(int num);
 	~Texture();
-	void LoadTexture(const char* TexturePath);
+	void LoadTexture2D(const char* TexturePath);
+	void LoadCubeMap(const std::vector<std::string> faces);
 	void ActivateTexture(int tex_idx);
 	void EnableVertFlip();
 	void DisableVertFlip();
-	void Bind();
+	void Bind2D();
+	void BindCM();
 	void unBind();
 };
 

@@ -361,6 +361,8 @@
     <None Include="Shaders\CubeFrag.glsl" />
     <None Include="Shaders\FrameVert.glsl" />
     <None Include="Shaders\FrameFrag.glsl" />
+    <None Include="Shaders\SkyVert.glsl" />
+    <None Include="Shaders\SkyFrag.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\container.jpg">
@@ -394,6 +396,24 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Textures\metal.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Textures\SkyBox\back.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Textures\SkyBox\bottom.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Textures\SkyBox\front.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Textures\SkyBox\left.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Textures\SkyBox\right.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Textures\SkyBox\top.jpg">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

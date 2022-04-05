@@ -287,6 +287,8 @@
     <None Include="Shaders\LightVert.glsl" />
     <None Include="Shaders\ObjectVert.glsl" />
     <None Include="Shaders\PackVert.glsl" />
+    <None Include="Shaders\SkyFrag.glsl" />
+    <None Include="Shaders\SkyVert.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="backpack\ao.jpg" />
@@ -300,6 +302,12 @@
     <Image Include="Textures\container2_specular.png" />
     <Image Include="Textures\marble.jpg" />
     <Image Include="Textures\metal.png" />
+    <Image Include="Textures\SkyBox\back.jpg" />
+    <Image Include="Textures\SkyBox\bottom.jpg" />
+    <Image Include="Textures\SkyBox\front.jpg" />
+    <Image Include="Textures\SkyBox\left.jpg" />
+    <Image Include="Textures\SkyBox\right.jpg" />
+    <Image Include="Textures\SkyBox\top.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="backpack\source_attribution.txt" />
