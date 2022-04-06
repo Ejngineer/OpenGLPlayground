@@ -27,15 +27,13 @@ class Mesh
 {
 private:
 	std::vector<Vertex> vertices;
-	std::vector<unsigned int> indices;
 	std::vector<ModelTexture> textures;
 	unsigned int VBO;
-	unsigned int VAO;
 	unsigned int EBO;
 	void setupMesh();
 public:
 	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<ModelTexture> textures);
 	void Draw(Shader shader);
-
-
+	std::vector<unsigned int> indices;
+	unsigned int VAO;
 };

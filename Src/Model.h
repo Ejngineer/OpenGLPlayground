@@ -15,7 +15,6 @@ class Model
 {
 private:
 	std::vector<ModelTexture> textures_loaded;
-	std::vector<Mesh> meshes;
 	std::string directory;
 
 	void loadModel(std::string path);
@@ -29,6 +28,7 @@ public:
 		loadModel(path);
 	}
 	void Draw(Shader& shader);
+	std::vector<Mesh> meshes;
 };
 
 #endif

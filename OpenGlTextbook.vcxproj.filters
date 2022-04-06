@@ -372,6 +372,7 @@
     <None Include="Shaders\PackGeo.glsl" />
     <None Include="Shaders\defaultGeoShader.glsl" />
     <None Include="Shaders\PackNormFrag.glsl" />
+    <None Include="Shaders\InstPackVert.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\container.jpg">
