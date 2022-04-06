@@ -132,7 +132,7 @@ int main(void)
 
 	glEnable(GL_TEXTURE_2D);
 
-	Shader shader("shaders/cubevert.glsl", "shaders/cubefrag.glsl");
+	Shader shader("shaders/objectvert.glsl", "shaders/objectfrag.glsl");
 
 	Cube cubeModel;
 
@@ -157,6 +157,11 @@ int main(void)
 		shader.setMat4f("model", model);
 		shader.setMat4f("view", view);
 		shader.setMat4f("projection", projection);
+		shader.setVec3f("objectColor", glm::vec3(0.4f, 0.1f, 0.1f));
+		shader.setVec3f("lightColor", glm::vec3(1.0f));
+		shader.setVec3f("lightPos", glm::vec3(1.0f, 1.0f, 2.5f));
+		shader.setVec3f("viewPos", camera.GetPosition());
+		shader.setFloat1f("shininess", 10.0f);
 
 		cubeModel.Draw();
 
