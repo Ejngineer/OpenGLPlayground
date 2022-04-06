@@ -10,8 +10,8 @@ class VertexBuffer
 {
 private:
 	unsigned int m_ID;
-	void getData(const void* data, unsigned int size);
 public:
+	VertexBuffer();
 	VertexBuffer(const void* data, unsigned int size);
 	VertexBuffer(const glm::vec2* data, unsigned int size);
 	VertexBuffer(const glm::vec3* data, unsigned int size);
@@ -19,6 +19,7 @@ public:
 	~VertexBuffer();
 	void Bind();
 	void UnBind();
+	void getData(const void* data, unsigned int size);
 };
 
 #endif
