@@ -17,7 +17,7 @@ private:
 	//Program ID
 	unsigned int ID;
 public:
-	Shader(const char* vertexPath, const char* fragmentPath);
+	Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath = NULL);
 	void use();
 	void SetBool(const std::string& name, bool value) const;
 	void setInt(const std::string& name, int value) const;

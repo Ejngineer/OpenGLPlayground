@@ -279,16 +279,20 @@
     <None Include="Dependencies\assimp\lib\assimp-vc143-mtd.pdb" />
     <None Include="Shaders\CubeFrag.glsl" />
     <None Include="Shaders\CubeVert.glsl" />
-    <None Include="Shaders\FragShader.glsl" />
+    <None Include="Shaders\fragShader.glsl" />
+    <None Include="Shaders\PackFrag.glsl" />
     <None Include="Shaders\FrameFrag.glsl" />
     <None Include="Shaders\FrameVert.glsl" />
+    <None Include="Shaders\geoShader.glsl" />
     <None Include="Shaders\LightFrag.glsl" />
     <None Include="Shaders\ObjectFrag.glsl" />
     <None Include="Shaders\LightVert.glsl" />
     <None Include="Shaders\ObjectVert.glsl" />
+    <None Include="Shaders\PackGeo.glsl" />
     <None Include="Shaders\PackVert.glsl" />
     <None Include="Shaders\SkyFrag.glsl" />
     <None Include="Shaders\SkyVert.glsl" />
+    <None Include="Shaders\vertShader.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="backpack\ao.jpg" />

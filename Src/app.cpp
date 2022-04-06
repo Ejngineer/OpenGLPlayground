@@ -5,7 +5,7 @@
 #include "VertexBuffer.h"
 #include "Shader.h"
 #include "Camera.h"
-#include "Texture.h"
+#include "Model.h"
 
 /*Globals*/
 Camera camera;
@@ -128,150 +128,35 @@ int main(void)
 
 	glEnable(GL_TEXTURE_2D);
 
-	float cubeVertices[] = {
-		// positions          // normals
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-
-		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
-	};
-
-	float skyboxVertices[] = {
-		// positions          
-		-1.0f,  1.0f, -1.0f,
-		-1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,
-
-		-1.0f, -1.0f,  1.0f,
-		-1.0f, -1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f,  1.0f,
-		-1.0f, -1.0f,  1.0f,
-
-		 1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-
-		-1.0f, -1.0f,  1.0f,
-		-1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f, -1.0f,  1.0f,
-		-1.0f, -1.0f,  1.0f,
-
-		-1.0f,  1.0f, -1.0f,
-		 1.0f,  1.0f, -1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		-1.0f,  1.0f,  1.0f,
-		-1.0f,  1.0f, -1.0f,
-
-		-1.0f, -1.0f, -1.0f,
-		-1.0f, -1.0f,  1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		-1.0f, -1.0f,  1.0f,
-		 1.0f, -1.0f,  1.0f
-	};
-
-
-	std::vector<std::string> faces
+	float points[]
 	{
-			"Textures/SkyBox/right.jpg",
-			"Textures/SkyBox/left.jpg",
-			"Textures/SkyBox/top.jpg",
-			"Textures/SkyBox/bottom.jpg",
-			"Textures/SkyBox/front.jpg",
-			"Textures/SkyBox/back.jpg"
+	   -0.5f,  0.5f,
+		0.5f,  0.5f,
+		0.5f, -0.5f,
+	   -0.5f, -0.5f
 	};
 
+	unsigned int VAO;
+	unsigned int VBO;
 
-	/*Buffers*/
-	VertexArray VAO;
-	VertexBuffer BoxVBO(cubeVertices, sizeof(cubeVertices));
-	BoxVBO.Bind();
+	glGenVertexArrays(1,&VAO);
+	glBindVertexArray(VAO);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VAO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(points), &points, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	Shader shader("Shaders/packVert.glsl", "Shaders/PackFrag.glsl", "Shaders/PackGeo.glsl");
+	shader.use();
+
+	Model Packmodel("backpack/backpack.obj");
 	
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	BoxVBO.UnBind();
-	VAO.UnBind();
-
-	VertexArray SVAO;
-	SVAO.Bind();
-
-	VertexBuffer SVBO(skyboxVertices, sizeof(skyboxVertices));
-	SVBO.Bind();
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-////////////////////////////////////
-///////////Shaders/////////////////
-//////////////////////////////////
-	Shader CubeShader("Shaders/CubeVert.glsl", "Shaders/CubeFrag.glsl");
-	
-	Shader SkyShader("Shaders/SkyVert.glsl", "Shaders/SkyFrag.glsl");
-	
-////////////////////////////////
-/////////Cube Maps/////////////
-//////////////////////////////
-
-	Texture CubeMap;
-	CubeMap.BindCM();
-	CubeMap.LoadCubeMap(faces);
-
-	CubeShader.use();
-	CubeShader.setInt("cubeMap", 0);
-
-	SkyShader.use();
-	SkyShader.setInt("cubeMap", 0);
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
@@ -286,46 +171,16 @@ int main(void)
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		CubeShader.use();
-		
-		/*Box model matrix*/
 		glm::mat4 model(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-		glm::mat4 model1 = model;
+		glm::mat4 view = camera.GetViewMatrix();
+		glm::mat4 projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.0f);
 
-		/*Box view matrix*/
-		glm::mat4 view(1.0f);
+		shader.setMat4f("model", model);
+		shader.setMat4f("view", view);
+		shader.setMat4f("projection", projection);
+		shader.setFloat1f("time", glfwGetTime());
 
-		/*Box projection matrix*/
-		glm::mat4 projection(1.0f);
-		projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.0f);
-
-		view = camera.GetViewMatrix();
-
-		CubeShader.setMat4f("model", model);
-		CubeShader.setMat4f("view", view);
-		CubeShader.setMat4f("projection", projection);
-		CubeShader.setVec3f("camPos", camera.GetPosition());
-
-		VAO.Bind();
-		CubeMap.BindCM();
-		CubeMap.ActivateTexture(0);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-	
-		SkyShader.use();
-		glDepthFunc(GL_LEQUAL);
-		
-		view = glm::mat4(glm::mat3(view));
-
-		SkyShader.setMat4f("projection", projection);
-		SkyShader.setMat4f("view", view);
-
-		SVAO.Bind();
-		CubeMap.BindCM();
-		CubeMap.ActivateTexture(0);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		SVAO.UnBind();
-		glDepthFunc(GL_LESS);
+		Packmodel.Draw(shader);
 
 		glfwSwapBuffers(window);
 
