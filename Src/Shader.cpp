@@ -172,6 +172,18 @@ void Shader::setVec3f(const std::string& name, float f0, float f1, float f2) con
 	glUniform3f(transformLoc, f0, f1, f2);
 }
 
+void Shader::setVec2f(const std::string& name, glm::vec2 vec) const
+{
+	int transformLoc = glGetUniformLocation(ID, name.c_str());
+	glUniform2f(transformLoc, vec.x, vec.y);
+}
+
+void Shader::setVec2f(const std::string& name, float f0, float f1) const
+{
+	int transformLoc = glGetUniformLocation(ID, name.c_str());
+	glUniform2f(transformLoc, f0, f1);
+}
+
 unsigned int Shader::getID() const
 {
 	return ID;

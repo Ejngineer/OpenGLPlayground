@@ -28,6 +28,8 @@ public:
 	void setMat4f(const std::string& name, glm::mat4 transform) const;
 	void setVec3f(const std::string& name, glm::vec3 vec) const;
 	void setVec3f(const std::string& name, float f0, float f1, float f2) const;
+	void setVec2f(const std::string& name, glm::vec2 vec) const;
+	void setVec2f(const std::string& name, float f0, float f1) const;
 	unsigned int getID() const;
 };
 

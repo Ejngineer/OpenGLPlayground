@@ -1,8 +1,15 @@
 #version 330 core
 
 layout (location = 0) in vec2 aPos;
+layout (location = 1) in vec3 aColor;
+
+out vec3 Color;
+
+uniform vec2 offsets[100];
 
 void main()
 {
-	gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);
+	vec2 offset = offsets[gl_InstanceID];
+	gl_Position = vec4(aPos + offset, 0.0, 1.0);
+	Color = aColor;
 }

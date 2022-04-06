@@ -128,11 +128,45 @@ int main(void)
 
 	glEnable(GL_TEXTURE_2D);
 
-	Shader shader("Shaders/packvert.glsl", "Shaders/packfrag.glsl");
-	Shader shaderNorm("Shaders/packnormvert.glsl", "Shaders/packnormfrag.glsl", "shaders/packgeo.glsl");
+	float quadVertices[] = {
+		// positions // colors
+		-0.05f, 0.05f, 1.0f, 0.0f, 0.0f,
+		0.05f, -0.05f, 0.0f, 1.0f, 0.0f,
+		-0.05f, -0.05f, 0.0f, 0.0f, 1.0f,
+		-0.05f, 0.05f, 1.0f, 0.0f, 0.0f,
+		0.05f, -0.05f, 0.0f, 1.0f, 0.0f,
+		0.05f, 0.05f, 0.0f, 1.0f, 1.0f
+	};
 
-	stbi_set_flip_vertically_on_load(true);
-	Model Packmodel("backpack/backpack.obj");
+	VertexArray VAO;
+	VAO.Bind();
+	VertexBuffer VBO(quadVertices, sizeof(quadVertices));
+	VBO.Bind();
+
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+
+	VAO.UnBind();
+	VBO.UnBind();
+
+	glm::vec2 translations[100];
+	int index = 0;
+	float offset = 0.1f;
+
+	for (int y = -10; y < 10; y += 2)
+	{
+		for (int x = -10; x < 10; x+=2)
+		{
+			glm::vec2 translation;
+			translation.x = (float)x / 10.0f + offset;
+			translation.y = (float)y / 10.0f + offset;
+			translations[index++] = translation;
+		}
+	}
+
+	Shader shader("shaders/vertshader.glsl", "shaders/fragshader.glsl");
 	
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
@@ -147,21 +181,19 @@ int main(void)
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		shader.use();
+		/*shader.use();
 		glm::mat4 model(1.0f);
 		glm::mat4 view = camera.GetViewMatrix();
-		glm::mat4 projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 1.0f, 100.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 1.0f, 100.0f);*/
 
-		shader.setMat4f("model", model);
-		shader.setMat4f("view", view);
-		shader.setMat4f("projection", projection);
-		Packmodel.Draw(shader);
-
-		shaderNorm.use();
-		shaderNorm.setMat4f("projection", projection);
-		shaderNorm.setMat4f("model", model);
-		shaderNorm.setMat4f("view", view);
-		Packmodel.Draw(shaderNorm);
+		shader.use();
+		for (unsigned int i = 0; i < 100; i++)
+		{
+			shader.setVec2f(("offsets[" + std::to_string(i) + "]"), translations[i]);
+		}
+		VAO.Bind();
+		glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 100);
+		VAO.UnBind();
 		
 		glfwSwapBuffers(window);
 
