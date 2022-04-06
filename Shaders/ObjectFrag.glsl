@@ -28,7 +28,7 @@ void main()
 	vec3 diffuse = diff * lightColor;
 
 	//Specular Light
-	float specularstr = 0.5;
+	float specularstr = 1.0;
 	float spec = pow(max(dot(normal, halfwayDir), 0.0), shininess);
 	//float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
 	vec3 specular = specularstr * lightColor * spec;

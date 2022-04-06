@@ -82,7 +82,7 @@ int main(void)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-	glfwWindowHint(GLFW_SAMPLES, 4);
+	//glfwWindowHint(GLFW_SAMPLES, 4);
 
 	/* Create a windowed mode window and its OpenGL context */
 	window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
@@ -115,8 +115,11 @@ int main(void)
 	//Enable opengl depth-testing
 	glEnable(GL_DEPTH_TEST);
 
+	//Enable Gamma correction
+	glEnable(GL_FRAMEBUFFER_SRGB);
+
 	//Enable Multi-Sampling
-	glEnable(GL_MULTISAMPLE);
+	//glEnable(GL_MULTISAMPLE);
 
 	//Enable face culling
 	//glEnable(GL_CULL_FACE);
@@ -161,7 +164,7 @@ int main(void)
 		shader.setVec3f("lightColor", glm::vec3(1.0f));
 		shader.setVec3f("lightPos", glm::vec3(1.0f, 1.0f, 2.5f));
 		shader.setVec3f("viewPos", camera.GetPosition());
-		shader.setFloat1f("shininess", 10.0f);
+		shader.setFloat1f("shininess", 64.0f);
 
 		cubeModel.Draw();
 
