@@ -138,26 +138,13 @@ int main(void)
 		0.05f, 0.05f, 0.0f, 1.0f, 1.0f
 	};
 
-	VertexArray VAO;
-	VAO.Bind();
-	VertexBuffer VBO(quadVertices, sizeof(quadVertices));
-	VBO.Bind();
-
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-
-	VAO.UnBind();
-	VBO.UnBind();
-
 	glm::vec2 translations[100];
 	int index = 0;
 	float offset = 0.1f;
 
 	for (int y = -10; y < 10; y += 2)
 	{
-		for (int x = -10; x < 10; x+=2)
+		for (int x = -10; x < 10; x += 2)
 		{
 			glm::vec2 translation;
 			translation.x = (float)x / 10.0f + offset;
@@ -165,6 +152,32 @@ int main(void)
 			translations[index++] = translation;
 		}
 	}
+
+	unsigned int VBOInst;
+	glGenBuffers(1, &VBOInst);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOInst);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * 100, &translations[0], GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	VertexArray VAO;
+	VAO.Bind();
+	VertexBuffer VBO(quadVertices, sizeof(quadVertices));
+
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+
+	//VertexBuffer VBOInst(&translations[0], sizeof(glm::vec2) * 100);
+	//VBOInst.Bind();
+	
+	glBindBuffer(GL_ARRAY_BUFFER, VBOInst);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glEnableVertexAttribArray(2);
+
+	//VBOInst.UnBind();
+	glVertexAttribDivisor(2, 1);
 
 	Shader shader("shaders/vertshader.glsl", "shaders/fragshader.glsl");
 	
@@ -187,10 +200,6 @@ int main(void)
 		glm::mat4 projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 1.0f, 100.0f);*/
 
 		shader.use();
-		for (unsigned int i = 0; i < 100; i++)
-		{
-			shader.setVec2f(("offsets[" + std::to_string(i) + "]"), translations[i]);
-		}
 		VAO.Bind();
 		glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 100);
 		VAO.UnBind();
@@ -200,6 +209,7 @@ int main(void)
 		/* Poll for and process events */
 		glfwPollEvents();
 	}
+	glDeleteBuffers(1, &VBOInst);
 
 	glfwTerminate();
 	return 0;
