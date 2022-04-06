@@ -28,7 +28,7 @@ class Mesh
 private:
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
-	std::vector<ModelTexture> Textures;
+	std::vector<ModelTexture> textures;
 	unsigned int VBO;
 	unsigned int VAO;
 	unsigned int EBO;

@@ -12,12 +12,14 @@
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
 
-class Shader {
+class Shader 
+{
 private:
 	//Program ID
 	unsigned int ID;
+	void checkCompileErrors(GLuint shader, std::string type);
 public:
-	Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath = NULL);
+	Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr);
 	void use();
 	void SetBool(const std::string& name, bool value) const;
 	void setInt(const std::string& name, int value) const;

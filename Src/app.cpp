@@ -128,36 +128,12 @@ int main(void)
 
 	glEnable(GL_TEXTURE_2D);
 
-	float points[]
-	{
-	   -0.5f,  0.5f,
-		0.5f,  0.5f,
-		0.5f, -0.5f,
-	   -0.5f, -0.5f
-	};
+	Shader shader("Shaders/packvert.glsl", "Shaders/packfrag.glsl");
+	Shader shaderNorm("Shaders/packnormvert.glsl", "Shaders/packnormfrag.glsl", "shaders/packgeo.glsl");
 
-	unsigned int VAO;
-	unsigned int VBO;
-
-	glGenVertexArrays(1,&VAO);
-	glBindVertexArray(VAO);
-
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VAO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(points), &points, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	Shader shader("Shaders/packVert.glsl", "Shaders/PackFrag.glsl", "Shaders/PackGeo.glsl");
-	shader.use();
-
+	stbi_set_flip_vertically_on_load(true);
 	Model Packmodel("backpack/backpack.obj");
 	
-
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
@@ -171,17 +147,22 @@ int main(void)
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		shader.use();
 		glm::mat4 model(1.0f);
 		glm::mat4 view = camera.GetViewMatrix();
-		glm::mat4 projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 1.0f, 100.0f);
 
 		shader.setMat4f("model", model);
 		shader.setMat4f("view", view);
 		shader.setMat4f("projection", projection);
-		shader.setFloat1f("time", glfwGetTime());
-
 		Packmodel.Draw(shader);
 
+		shaderNorm.use();
+		shaderNorm.setMat4f("projection", projection);
+		shaderNorm.setMat4f("model", model);
+		shaderNorm.setMat4f("view", view);
+		Packmodel.Draw(shaderNorm);
+		
 		glfwSwapBuffers(window);
 
 		/* Poll for and process events */

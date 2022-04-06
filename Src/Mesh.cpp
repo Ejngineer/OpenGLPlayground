@@ -5,7 +5,7 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std:
 {
 	this->vertices = vertices;
 	this->indices = indices;
-	this->Textures = textures;
+	this->textures = textures;
 
 	setupMesh();
 }
@@ -15,11 +15,11 @@ void Mesh::Draw(Shader shader)
 	unsigned int diffuseN = 1;
 	unsigned int specularN = 1;
 
-	for (int i = 0; i < Textures.size(); i++)
+	for (int i = 0; i < textures.size(); i++)
 	{
 		glActiveTexture(GL_TEXTURE0 + i);
 		std::string number;
-		std::string name = Textures[i].type;
+		std::string name = textures[i].type;
 		if (name == "texture_diffuse")
 		{
 			number = std::to_string(diffuseN++);
@@ -29,8 +29,8 @@ void Mesh::Draw(Shader shader)
 			number = std::to_string(specularN++);
 		}
 
-		shader.setFloat1f(("material." + name + number).c_str(), i);
-		glBindTexture(GL_TEXTURE_2D, Textures[i].id);
+		glUniform1i(glGetUniformLocation(shader.getID(), (name + number).c_str()), i);
+		glBindTexture(GL_TEXTURE_2D, textures[i].id);
 	}
 
 	glBindVertexArray(VAO);
