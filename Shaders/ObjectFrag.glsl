@@ -4,7 +4,7 @@ out vec4 FragColor;
 in vec3  NormVec;
 in vec3 FragPos;
 
-uniform vec3 lightPos;
+uniform vec3 lightDirection;
 uniform vec3 viewPos;
 uniform vec3 lightColor;
 uniform vec3 objectColor;
@@ -18,7 +18,7 @@ void main()
 	float ambientstr = 0.1;
 	vec3 ambient = ambientstr * lightColor;
 
-	vec3 lightDir = normalize(lightPos - FragPos);
+	vec3 lightDir = normalize(-lightDirection);
 	vec3 viewDir = normalize(viewPos - FragPos);
 	vec3 halfwayDir = normalize(lightDir + viewDir);
 	vec3 reflectDir = reflect(-lightDir, normal);
