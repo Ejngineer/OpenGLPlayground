@@ -116,7 +116,7 @@ int main(void)
 	glEnable(GL_DEPTH_TEST);
 
 	//Enable Gamma correction
-	glEnable(GL_FRAMEBUFFER_SRGB);
+	//glEnable(GL_FRAMEBUFFER_SRGB);
 
 	//Enable Multi-Sampling
 	//glEnable(GL_MULTISAMPLE);
@@ -180,8 +180,12 @@ int main(void)
 	quadVBO.UnBind();
 	quadVAO.UnBind();
 
-	Shader shader("shaders/shadowvert.glsl", "shaders/shadowfrag.glsl");
+	std::cout << "0" << std::endl;
+	Shader shader("shaders/shadowdepthvert.glsl", "shaders/shadowdepthfrag.glsl");
+	std::cout << "1" << std::endl;
 	Shader shader1("shaders/vertshader.glsl", "shaders/fragshader.glsl");
+	std::cout << "2" << std::endl;
+	Shader shader2("shaders/shadowvert.glsl", "shaders/shadowfrag.glsl");
 
 	//Cube to be draw
 	Cube cubeModel;
@@ -201,8 +205,10 @@ int main(void)
 		SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
@@ -212,6 +218,10 @@ int main(void)
 
 	shader1.use();
 	shader1.setInt("depthMap", 0);
+
+	shader2.use();
+	shader2.setInt("diffuseTexture",0);
+	shader2.setInt("shadowMap",1);
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
@@ -237,20 +247,27 @@ int main(void)
 
 		glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
-		shader.use();
-		shader.setMat4f("lightSpaceMatrix", lightSpaceMatrix);
+		glm::mat4 projection = glm::perspective(glm::radians(fov), 800.0f/600.0f, 0.1f, 100.0f);
+		glm::mat4 view = camera.GetViewMatrix();
+
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 		glClear(GL_DEPTH_BUFFER_BIT);
+		shader.use();
 		woodTex.ActivateTexture(0);
 		woodTex.Bind2D();
 		
+		shader.setMat4f("lightSpaceMatrix", lightSpaceMatrix);
+
 		glm::mat4 model = glm::mat4(1.0f);
 		shader.setMat4f("model", model);
 		glBindVertexArray(planeVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
 
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_FRONT);
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0.0f, 1.5f, 0.0));
 		model = glm::scale(model, glm::vec3(0.5f));
@@ -267,19 +284,58 @@ int main(void)
 		model = glm::scale(model, glm::vec3(0.25));
 		shader.setMat4f("model", model);
 		cubeModel.Draw();
+		glCullFace(GL_BACK);
+		glDisable(GL_CULL_FACE);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		glViewport(0, 0, 800, 600);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		shader2.use();
+		model = glm::mat4(1.0f);
+		shader2.setMat4f("lightSpaceMatrix", lightSpaceMatrix);
+		shader2.setMat4f("model", model);
+		shader2.setMat4f("view", view);
+		shader2.setMat4f("projection", projection);
+		shader2.setVec3f("lightPos", glm::vec3(-2.0f, 4.0f, -1.0f));
+		shader2.setVec3f("viewPos", camera.GetPosition());
+
+		woodTex.ActivateTexture(0);
+		woodTex.Bind2D();
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, depthMap);
+
+		glBindVertexArray(planeVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glBindVertexArray(0);
+
+		//cubes
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f, 1.5f, 0.0));
+		model = glm::scale(model, glm::vec3(0.5f));
+		shader2.setMat4f("model", model);
+		cubeModel.Draw();
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(2.0f, 0.0f, 1.0));
+		model = glm::scale(model, glm::vec3(0.5f));
+		shader2.setMat4f("model", model);
+		cubeModel.Draw();
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(-1.0f, 0.0f, 2.0));
+		model = glm::rotate(model, glm::radians(60.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
+		model = glm::scale(model, glm::vec3(0.25));
+		shader2.setMat4f("model", model);
+		cubeModel.Draw();
 
 		shader1.use();
 		shader1.setFloat1f("near_plane", near_plane);
 		shader1.setFloat1f("far_plane", far_plane);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, depthMap);
-		quadVAO.Bind();
+		/*quadVAO.Bind();
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-		quadVAO.UnBind();
+		quadVAO.UnBind();*/
 
 		glfwSwapBuffers(window);
 

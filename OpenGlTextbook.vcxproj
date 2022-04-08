@@ -296,6 +296,8 @@
     <None Include="Shaders\PackGeo.glsl" />
     <None Include="Shaders\PackNormFrag.glsl" />
     <None Include="Shaders\PackVert.glsl" />
+    <None Include="Shaders\ShadowDepthFrag.glsl" />
+    <None Include="Shaders\ShadowDepthVert.glsl" />
     <None Include="Shaders\ShadowFrag.glsl" />
     <None Include="Shaders\ShadowVert.glsl" />
     <None Include="Shaders\SkyFrag.glsl" />
