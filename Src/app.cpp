@@ -134,6 +134,7 @@ int main(void)
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_TEXTURE_CUBE_MAP);
 
 	float planeVertices[] = {
 		// positions            // normals         // texcoords
@@ -180,11 +181,7 @@ int main(void)
 	quadVBO.UnBind();
 	quadVAO.UnBind();
 
-	std::cout << "0" << std::endl;
-	Shader shader("shaders/shadowdepthvert.glsl", "shaders/shadowdepthfrag.glsl");
-	std::cout << "1" << std::endl;
-	Shader shader1("shaders/vertshader.glsl", "shaders/fragshader.glsl");
-	std::cout << "2" << std::endl;
+	Shader shader("shaders/shadowdepthvert.glsl", "shaders/shadowdepthfrag.glsl", "shaders/defaultgeoshader.glsl");
 	Shader shader2("shaders/shadowvert.glsl", "shaders/shadowfrag.glsl");
 
 	//Cube to be draw
@@ -193,35 +190,38 @@ int main(void)
 	Texture woodTex;
 	woodTex.LoadTexture2D("textures/wood.png");
 
+	/////FrameBuffer////////////////////////////
 	unsigned int depthMapFBO;
 	glGenFramebuffers(1, &depthMapFBO);
 
 	const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
 
-	unsigned int depthMap;
-	glGenTextures(1, &depthMap);
-	glBindTexture(GL_TEXTURE_2D, depthMap);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH,
-		SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-	float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+	/////////Cube Map///////////////////
+	unsigned int cubeMap;
+	glGenTextures(1, &cubeMap);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap);
+
+	for (unsigned int i = 0; i < 6; ++i)
+	{
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	}
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, cubeMap, 0);
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	shader1.use();
-	shader1.setInt("depthMap", 0);
-
 	shader2.use();
 	shader2.setInt("diffuseTexture",0);
-	shader2.setInt("shadowMap",1);
+	shader2.setInt("depthMap",1);
+
+	glm::vec3 lightPos = glm::vec3(0.0f, 0.0f, 0.0f);
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
@@ -236,16 +236,18 @@ int main(void)
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		float near_plane = 1.0f, far_plane = 7.5f;
-		glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+		float far_plane = 25.0f;
+		float aspect = (float)SHADOW_WIDTH / (float)SHADOW_HEIGHT;
+		float near = 1.0f, far = 25.0f;
+		glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near, far);
 
-		glm::mat4 lightView = glm::lookAt(
-			glm::vec3(-2.0f, 4.0f, -1.0f),
-			glm::vec3(0.0f),
-			glm::vec3(0.0f, 1.0f, 0.0f)
-		);
-
-		glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+		std::vector<glm::mat4> shadowTransforms;
+		shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+		shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+		shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+		shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
+		shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+		shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
 
 		glm::mat4 projection = glm::perspective(glm::radians(fov), 800.0f/600.0f, 0.1f, 100.0f);
 		glm::mat4 view = camera.GetViewMatrix();
@@ -255,37 +257,47 @@ int main(void)
 		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 		glClear(GL_DEPTH_BUFFER_BIT);
 		shader.use();
-		woodTex.ActivateTexture(0);
-		woodTex.Bind2D();
-		
-		shader.setMat4f("lightSpaceMatrix", lightSpaceMatrix);
+		for (unsigned int i = 0; i < 6; ++i)
+		{
+			shader.setMat4f("shadowMatrices[" + std::to_string(i) + "]", shadowTransforms[i]);
+		}
+	
+		shader.setVec3f("lightPos", lightPos);
+		shader.setFloat1f("far_plane", far_plane);
 
 		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::scale(model, glm::vec3(10.0f));
 		shader.setMat4f("model", model);
-		glBindVertexArray(planeVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-		glBindVertexArray(0);
-
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_FRONT);
+		shader.setInt("reverse_normals", 1);
+		cubeModel.Draw();
+		shader.setInt("reverse_normals", 0);
+		// cubes
 		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 1.5f, 0.0));
+		model = glm::translate(model, glm::vec3(4.0f, -3.5f, 0.0));
 		model = glm::scale(model, glm::vec3(0.5f));
 		shader.setMat4f("model", model);
 		cubeModel.Draw();
 		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(2.0f, 0.0f, 1.0));
+		model = glm::translate(model, glm::vec3(2.0f, 3.0f, 1.0));
+		model = glm::scale(model, glm::vec3(0.75f));
+		shader.setMat4f("model", model);
+		cubeModel.Draw();
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(-3.0f, -1.0f, 0.0));
 		model = glm::scale(model, glm::vec3(0.5f));
 		shader.setMat4f("model", model);
 		cubeModel.Draw();
 		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(-1.0f, 0.0f, 2.0));
+		model = glm::translate(model, glm::vec3(-1.5f, 1.0f, 1.5));
+		model = glm::scale(model, glm::vec3(0.5f));
+		shader.setMat4f("model", model);
+		cubeModel.Draw();
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(-1.5f, 2.0f, -3.0));
 		model = glm::rotate(model, glm::radians(60.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
-		model = glm::scale(model, glm::vec3(0.25));
+		model = glm::scale(model, glm::vec3(0.75f));
 		shader.setMat4f("model", model);
 		cubeModel.Draw();
-		glCullFace(GL_BACK);
-		glDisable(GL_CULL_FACE);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -293,49 +305,50 @@ int main(void)
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		shader2.use();
-		model = glm::mat4(1.0f);
-		shader2.setMat4f("lightSpaceMatrix", lightSpaceMatrix);
-		shader2.setMat4f("model", model);
 		shader2.setMat4f("view", view);
 		shader2.setMat4f("projection", projection);
-		shader2.setVec3f("lightPos", glm::vec3(-2.0f, 4.0f, -1.0f));
+		shader2.setVec3f("lightPos", glm::vec3(0.0f, 0.0f, 0.0f));
 		shader2.setVec3f("viewPos", camera.GetPosition());
+		shader2.setFloat1f("far_plane", far_plane);
 
 		woodTex.ActivateTexture(0);
 		woodTex.Bind2D();
 		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, depthMap);
-
-		glBindVertexArray(planeVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-		glBindVertexArray(0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap);
 
 		//cubes
 		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 1.5f, 0.0));
+		model = glm::scale(model, glm::vec3(10.0f));
+		shader2.setMat4f("model", model);
+		shader2.setInt("reverse_normals", 1);
+		cubeModel.Draw();
+		shader2.setInt("reverse_normals", 0);
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(4.0f, -3.5f, 0.0));
 		model = glm::scale(model, glm::vec3(0.5f));
 		shader2.setMat4f("model", model);
 		cubeModel.Draw();
 		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(2.0f, 0.0f, 1.0));
+		model = glm::translate(model, glm::vec3(2.0f, 3.0f, 1.0));
+		model = glm::scale(model, glm::vec3(0.75f));
+		shader2.setMat4f("model", model);
+		cubeModel.Draw();
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(-3.0f, -1.0f, 0.0));
 		model = glm::scale(model, glm::vec3(0.5f));
 		shader2.setMat4f("model", model);
 		cubeModel.Draw();
 		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(-1.0f, 0.0f, 2.0));
+		model = glm::translate(model, glm::vec3(-1.5f, 1.0f, 1.5));
+		model = glm::scale(model, glm::vec3(0.5f));
+		shader2.setMat4f("model", model);
+		cubeModel.Draw();
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(-1.5f, 2.0f, -3.0));
 		model = glm::rotate(model, glm::radians(60.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
-		model = glm::scale(model, glm::vec3(0.25));
+		model = glm::scale(model, glm::vec3(0.75f));
 		shader2.setMat4f("model", model);
 		cubeModel.Draw();
-
-		shader1.use();
-		shader1.setFloat1f("near_plane", near_plane);
-		shader1.setFloat1f("far_plane", far_plane);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, depthMap);
-		/*quadVAO.Bind();
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-		quadVAO.UnBind();*/
 
 		glfwSwapBuffers(window);
 

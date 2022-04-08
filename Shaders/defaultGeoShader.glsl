@@ -1,28 +1,24 @@
 #version 330 core
 
 layout (triangles) in;
-layout (triangle_strip, max_vertices = 3) out;
+layout (triangle_strip, max_vertices = 18) out;
 
-in VS_OUT
-{
-	vec2 texCoords;
-} gs_in[];
+uniform mat4 shadowMatrices[6];
 
-out vec2 Tex;
+out vec4 FragPos;
 
 void main()
 {
-	gl_Position = gl_in[0].gl_Position;
-	Tex = gs_in[0].texCoords;
-	EmitVertex();
-	
-	gl_Position = gl_in[1].gl_Position;
-	Tex = gs_in[1].texCoords;
-	EmitVertex();
-	
-	gl_Position = gl_in[2].gl_Position;
-	Tex = gs_in[2].texCoords;
-	EmitVertex();
+	for(int face = 0; face < 6; ++face)
+	{
+		gl_Layer = face;
+		for(int i = 0; i < 3; ++i)
+		{
+			FragPos = gl_in[i].gl_Position;
+			gl_Position = shadowMatrices[face] * FragPos;
+			EmitVertex();
+		}
+		EndPrimitive();
+	}
 
-	EndPrimitive();
 }

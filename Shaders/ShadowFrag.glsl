@@ -7,36 +7,43 @@ in VS_OUT
 	vec3 FragPos;
 	vec3 Normal;
 	vec2 TexCoords;
-	vec4 FragPosLightSpace;
 } fs_in;
 
 uniform sampler2D diffuseTexture;
-uniform sampler2D shadowMap;
+uniform samplerCube depthMap;
 
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 
-float ShadowCalculation(vec4 fragPosLightSpace, vec3 lightDir)
-{
-	vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-	projCoords = projCoords * 0.5 + 0.5;
-	float closestDepth = texture(shadowMap, projCoords.xy).r;
-	float currentDepth = projCoords.z;
-	float bias = max(0.05 * (1.0 - dot(normalize(fs_in.Normal), lightDir)), 0.005);
-	float shadow  = 0.0;
-	vec2 TexelSize = 1.0 / textureSize(shadowMap, 0);
-	for(int x = -1; x <= 1; ++x)
-	{
-		for(int y = -1; y <= 1; ++y)
-		{
-			float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * TexelSize).r;
-			shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
-		}
-	}
-	shadow /= 9.0;
+uniform float far_plane;
 
-	if(projCoords.z > 1.0)
-		shadow = 0.0;
+vec3 sampleOffsetDirections[20] = vec3[]
+(
+	vec3( 1, 1, 1), vec3( 1, -1, 1), vec3(-1, -1, 1), vec3(-1, 1, 1),
+	vec3( 1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+	vec3( 1, 1, 0), vec3( 1, -1, 0), vec3(-1, -1, 0), vec3(-1, 1, 0),
+	vec3( 1, 0, 1), vec3(-1, 0, 1), vec3( 1, 0, -1), vec3(-1, 0, -1),
+	vec3( 0, 1, 1), vec3( 0, -1, 1), vec3( 0, -1, -1), vec3( 0, 1, -1)
+);
+
+
+float ShadowCalculation(vec3 fragpos)
+{
+	vec3 fragToLight = fragpos - lightPos;
+	float currentDepth = length(fragToLight);
+	float bias = 0.15;
+	float shadow = 0.0;
+	float samples = 20.0;
+	float viewDistance = length(viewPos - fragpos);
+	float diskRadius = (1.0 + (viewDistance / far_plane)) / 25.0;
+	for(int i = 0; i < samples; ++i)
+	{
+		float closestDepth = texture(depthMap, fragToLight + sampleOffsetDirections[i] * diskRadius).r;
+		closestDepth *= far_plane;
+		if(currentDepth - bias > closestDepth)
+			shadow += 1.0;
+	}
+	shadow /= float(samples);
 
 	return shadow;
 }
@@ -46,8 +53,8 @@ void main()
 	vec3 Color = texture(diffuseTexture, fs_in.TexCoords).rgb;
 	vec3 normal = normalize(fs_in.Normal);
 
-	vec3 lightColor = vec3(1.0);
-	vec3 ambient = 0.15 * lightColor;
+	vec3 lightColor = vec3(0.3);
+	vec3 ambient = 0.3 * lightColor;
 
 	vec3 lightDir = normalize(lightPos - fs_in.FragPos);
 	float diff = max(dot(lightDir, normal), 0.0);
@@ -59,8 +66,8 @@ void main()
 	spec = pow(max(dot(normal, halfwayDir), 0.0), 64.0);
 	vec3 specular = spec * lightColor;
 
-	float shadow = ShadowCalculation(fs_in.FragPosLightSpace, lightDir);
+	float shadow = ShadowCalculation(fs_in.FragPos);
 	vec3 lighting = ambient + (1.0 - shadow) * (diffuse + specular) * Color;
 
-	FragColor = vec4(lighting, 0.0);
+	FragColor = vec4(lighting, 1.0);
 }
