@@ -9,8 +9,6 @@
 #include <assimp/postprocess.h>
 #include <vector>
 
-
-
 class Model
 {
 private:

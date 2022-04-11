@@ -5,6 +5,7 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Texture.h"
+#include "Model.h"
 
 /*Globals*/
 Camera camera;
@@ -171,8 +172,11 @@ int main(void)
 
 	Texture BrickTex;
 	Texture BrickTexNorm;
-	BrickTex.LoadTexture2D("textures/brickwall.jpg");
-	BrickTexNorm.LoadTexture2D("textures/brickwall_normal.jpg");
+	Texture BrickTexDisp;
+
+	BrickTex.LoadTexture2D("textures/toy_box_diffuse.png");
+	BrickTexNorm.LoadTexture2D("textures/toy_box_normal.png");
+	BrickTexDisp.LoadTexture2D("textures/toy_box_disp.png");
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
@@ -193,15 +197,18 @@ int main(void)
 		glm::mat4 projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.f);
 
 		shader.use();
-		shader.setVec3f("lightColor", glm::vec3(1.0f));
 		shader.setVec3f("lightPos", glm::vec3(1.5f, 0.0f, 1.0f));
 		shader.setVec3f("viewPos", camera.GetPosition());
+		shader.setFloat1f("heightscale", 0.1f);
 		shader.setInt("walltexture", 0);
 		shader.setInt("walltexturenorm", 1);
+		shader.setInt("walltexturedepth", 2);
 		BrickTex.ActivateTexture(0);
 		BrickTex.Bind2D();
 		BrickTexNorm.ActivateTexture(1);
 		BrickTexNorm.Bind2D();
+		BrickTexDisp.ActivateTexture(2);
+		BrickTexDisp.Bind2D();
 		shader.setMat4f("model", model);
 		shader.setMat4f("view", view);
 		shader.setMat4f("projection", projection);

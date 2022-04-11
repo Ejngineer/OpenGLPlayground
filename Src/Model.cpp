@@ -3,7 +3,7 @@
 void Model::loadModel(std::string path)
 {
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -64,6 +64,13 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 			vertex.TexCoords = glm::vec2(0.0f, 0.0f);
 		}
 
+		if (mesh->HasTangentsAndBitangents())
+		{
+			vector.x = mesh->mTangents[i].x;
+			vector.y = mesh->mTangents[i].y;
+			vector.z = mesh->mTangents[i].z;
+		}
+
 		vertices.push_back(vertex);
 	}
 
@@ -81,12 +88,17 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	if (mesh->mMaterialIndex >= 0)
 	{
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+
 		std::vector<ModelTexture> diffuseMaps = loadMaterialTextures(material, 
 			aiTextureType_DIFFUSE, "texture_diffuse");
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+		
 		std::vector<ModelTexture> specularMaps = loadMaterialTextures(material, 
 			aiTextureType_SPECULAR, "texture_specular");
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+
+		std::vector<ModelTexture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
+		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 	}
 
 	return Mesh(vertices, indices, textures);
