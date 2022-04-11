@@ -383,6 +383,8 @@
     <None Include="Shaders\ShadowFrag.glsl" />
     <None Include="Shaders\ShadowDepthVert.glsl" />
     <None Include="Shaders\ShadowDepthFrag.glsl" />
+    <None Include="Shaders\NormMapVert.glsl" />
+    <None Include="Shaders\NormMapFrag.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\container.jpg">

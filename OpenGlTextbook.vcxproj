@@ -285,6 +285,8 @@
     <None Include="Shaders\CubeVert.glsl" />
     <None Include="Shaders\fragShader.glsl" />
     <None Include="Shaders\InstPackVert.glsl" />
+    <None Include="Shaders\NormMapFrag.glsl" />
+    <None Include="Shaders\NormMapVert.glsl" />
     <None Include="Shaders\PackFrag.glsl" />
     <None Include="Shaders\FrameFrag.glsl" />
     <None Include="Shaders\FrameVert.glsl" />
