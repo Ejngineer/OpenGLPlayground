@@ -136,47 +136,79 @@ int main(void)
 
 	glEnable(GL_TEXTURE_2D);
 
+	unsigned int quadVAO = 0;
+	unsigned int quadVBO;
 	float quadVertices[] = {
-		//Position          //Normals       //TexCoords  //Tangents
-		-1.0f,-1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 2.0f, 0.0f, 0.0f,
-		 1.0f,-1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 2.0f, 0.0f, 0.0f,
-		 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 2.0f, 0.0f, 0.0f,
-		-1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 2.0f, 0.0f, 0.0f
+		// positions        // texture Coords
+		-1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+		-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+		 1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+		 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
 	};
-	 
-	unsigned int quadIndices[] =
-	{
-		0,1,2,
-		2,3,0
-	};
+	// setup plane VAO
+	glGenVertexArrays(1, &quadVAO);
+	glGenBuffers(1, &quadVBO);
+	glBindVertexArray(quadVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 
-	VertexArray quadVAO;
-	VertexBuffer quadVBO(quadVertices, sizeof(quadVertices));
-	quadVAO.Bind();
-	quadVBO.Bind();
-	unsigned quadEBO;
-	glGenBuffers(1, &quadEBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, quadEBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(quadIndices), quadIndices, GL_STATIC_DRAW);
+	glBindVertexArray(quadVAO);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glBindVertexArray(0);
+
+	Shader shader("shaders/objectvert.glsl", "shaders/objectfrag.glsl");
+	Shader lightShader("shaders/lightvert.glsl", "shaders/lightfrag.glsl");
 	
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);					
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);					
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(8 * sizeof(float)));
-	glEnableVertexAttribArray(3);
+	shader.use();
+	Texture diffuseTexture;
+	diffuseTexture.LoadTexture2D("textures/wood.png");
 
-	Shader shader("shaders/normmapvert.glsl", "shaders/normmapfrag.glsl");
+	Cube cubeModel(1.0f, 1.0f, 1.0f);
 
-	Texture BrickTex;
-	Texture BrickTexNorm;
-	Texture BrickTexDisp;
+	std::vector<glm::vec3> lightPositions;
+	lightPositions.push_back(glm::vec3(0.0f, 0.0f, 49.5f)); // back light
+	lightPositions.push_back(glm::vec3(-1.4f, -1.9f, 9.0f));
+	lightPositions.push_back(glm::vec3(0.0f, -1.8f, 4.0f));
+	lightPositions.push_back(glm::vec3(0.8f, -1.7f, 6.0f));
 
-	BrickTex.LoadTexture2D("textures/toy_box_diffuse.png");
-	BrickTexNorm.LoadTexture2D("textures/toy_box_normal.png");
-	BrickTexDisp.LoadTexture2D("textures/toy_box_disp.png");
+	std::vector<glm::vec3> lightColors;
+	lightColors.push_back(glm::vec3(200.0f, 200.0f, 200.0f));
+	lightColors.push_back(glm::vec3(0.1f, 0.0f, 0.0f));
+	lightColors.push_back(glm::vec3(0.0f, 0.0f, 0.2f));
+	lightColors.push_back(glm::vec3(0.0f, 0.1f, 0.0f));
+
+	unsigned int hdrBuffer, colorBuffer;
+	glGenFramebuffers(1, &hdrBuffer);
+	glGenTextures(1, &colorBuffer);
+
+	glBindTexture(GL_TEXTURE_2D, colorBuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 800.0f, 600.0f, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	unsigned int rboDepth;
+	glGenRenderbuffers(1, &rboDepth);
+	glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 800.0f, 600.0f);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, hdrBuffer);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	{
+		std::cout << "ERROR::FRAMEBUFFER::INCOMPLETE" << std::endl;
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	
+	lightShader.use();
+	lightShader.setInt("hdrTexture", 0);
+
+	shader.use();
+	shader.setInt("diffuseTexture", 0);
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
@@ -196,26 +228,35 @@ int main(void)
 		glm::mat4 view = camera.GetViewMatrix();
 		glm::mat4 projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.f);
 
-		shader.use();
-		shader.setVec3f("lightPos", glm::vec3(1.5f, 0.0f, 1.0f));
-		shader.setVec3f("viewPos", camera.GetPosition());
-		shader.setFloat1f("heightscale", 0.1f);
-		shader.setInt("walltexture", 0);
-		shader.setInt("walltexturenorm", 1);
-		shader.setInt("walltexturedepth", 2);
-		BrickTex.ActivateTexture(0);
-		BrickTex.Bind2D();
-		BrickTexNorm.ActivateTexture(1);
-		BrickTexNorm.Bind2D();
-		BrickTexDisp.ActivateTexture(2);
-		BrickTexDisp.Bind2D();
-		shader.setMat4f("model", model);
-		shader.setMat4f("view", view);
-		shader.setMat4f("projection", projection);
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 25.0f));
+		model = glm::scale(model, glm::vec3(2.5f, 2.5f, 27.5f));
 
-		quadVAO.Bind();
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		quadVAO.UnBind();
+		glBindFramebuffer(GL_FRAMEBUFFER, hdrBuffer);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			shader.use();
+			shader.setMat4f("model", model);
+			shader.setMat4f("view", view);
+			shader.setMat4f("projection", projection);
+			shader.setVec3f("viewPos", camera.GetPosition());
+			for (unsigned int i = 0; i < 4; i++)
+			{
+				shader.setVec3f("plight[" + std::to_string(i) + "].Color", lightColors[i]);
+				shader.setVec3f("plight[" + std::to_string(i) + "].position", lightPositions[i]);
+			}
+			diffuseTexture.ActivateTexture(0);
+			diffuseTexture.Bind2D();
+
+			cubeModel.Draw();
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		lightShader.use();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, colorBuffer);
+		lightShader.setFloat1f("exposure", 0.8f);
+		glBindVertexArray(quadVAO);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		glBindVertexArray(0);
 
 		glfwSwapBuffers(window);
 

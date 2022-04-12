@@ -1,7 +1,53 @@
 #include "Cube.h"
 
-Cube::Cube()
+Cube::Cube(float x, float y, float z)
 {
+    float vertices[288] =
+    {
+        //NDC coords         //Normals            //Texture coords
+       -x, -y, -z,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+        x, -y, -z,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
+        x,  y, -z,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+        x,  y, -z,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+       -x,  y, -z,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
+       -x, -y, -z,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+
+       -x, -y,  z,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+        x, -y,  z,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
+        x,  y,  z,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+        x,  y,  z,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+       -x,  y,  z,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
+       -x, -y,  z,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+
+       -x,  y,  z, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+       -x,  y, -z, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+       -x, -y, -z, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+       -x, -y, -z, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+       -x, -y,  z, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+       -x,  y,  z, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+
+        x,  y,  z,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+        x,  y, -z,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+        x, -y, -z,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+        x, -y, -z,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+        x, -y,  z,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+        x,  y,  z,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+
+       -x, -y, -z,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
+        x, -y, -z,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
+        x, -y,  z,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+        x, -y,  z,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+       -x, -y,  z,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
+       -x, -y, -z,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
+
+       -x,  y, -z,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+        x,  y, -z,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
+        x,  y,  z,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+        x,  y,  z,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+       -x,  y,  z,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
+       -x,  y, -z,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
+    };
+
 	VBO.getData(&vertices, sizeof(vertices));
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
