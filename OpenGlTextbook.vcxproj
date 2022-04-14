@@ -266,6 +266,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="backpack\backpack.mtl" />
+    <None Include="Shaders\BloomFinalFrag.glsl" />
+    <None Include="Shaders\BloomFinalVert.glsl" />
+    <None Include="Shaders\BlurFrag.glsl" />
+    <None Include="Shaders\BlurVert.glsl" />
     <None Include="Shaders\defaultGeoShader.glsl" />
     <None Include="Dependencies\assimp\include\assimp\.editorconfig" />
     <None Include="Dependencies\assimp\include\assimp\color4.inl" />
