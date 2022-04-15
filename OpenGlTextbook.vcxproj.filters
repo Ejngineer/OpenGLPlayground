@@ -389,6 +389,10 @@
     <None Include="Shaders\BlurFrag.glsl" />
     <None Include="Shaders\BloomFinalVert.glsl" />
     <None Include="Shaders\BloomFinalFrag.glsl" />
+    <None Include="Shaders\gShaderVert.glsl" />
+    <None Include="Shaders\gShaderFrag.glsl" />
+    <None Include="Shaders\gLightVert.glsl" />
+    <None Include="Shaders\gLightFrag.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\container.jpg">
