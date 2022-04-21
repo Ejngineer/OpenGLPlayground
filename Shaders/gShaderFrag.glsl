@@ -8,14 +8,10 @@ in vec3 FragPos;
 in vec3 Normal;
 in vec2 TexCoords;
 
-uniform sampler2D diffuse_texture1;
-uniform sampler2D specular_texture1;
-
 void main()
 {
 	gPosition = FragPos;
 	gNormal = normalize(Normal);
-	gAlbedoSpec.rgb = texture(diffuse_texture1, TexCoords).rgb;
-	gAlbedoSpec.a = texture(specular_texture1, TexCoords).r;
+	gAlbedoSpec.rgb = vec3(0.95);
 
 }

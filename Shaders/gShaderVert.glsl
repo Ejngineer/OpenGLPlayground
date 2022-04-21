@@ -11,12 +11,21 @@ out vec2 TexCoords;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform bool invert_normal;
 
 void main()
 {
-	FragPos = vec3(model * vec4(aPos, 1.0));
-	mat3 n = transpose(inverse(mat3(model)));
-	Normal = n * aNormal;
+	vec4 viewPos = view * model * vec4(aPos, 1.0);
+	FragPos = viewPos.xyz;
+	mat3 n = transpose(inverse(mat3(view * model)));
+	if(invert_normal)
+	{
+		Normal = n * -aNormal;
+	}
+	else 
+	{
+		Normal = n * aNormal;
+	}
 	TexCoords = aTexCoords;
-	gl_Position = projection * view * model * vec4(aPos, 1.0);
+	gl_Position = projection * viewPos;
 }

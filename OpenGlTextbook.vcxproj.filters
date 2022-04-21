@@ -323,6 +323,9 @@
     <ClInclude Include="Src\Cube.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Sphere.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="Dependencies\GLFW\lib-vc2022\glfw3.lib" />
@@ -393,6 +396,9 @@
     <None Include="Shaders\gShaderFrag.glsl" />
     <None Include="Shaders\gLightVert.glsl" />
     <None Include="Shaders\gLightFrag.glsl" />
+    <None Include="Shaders\ssaoFrag.glsl" />
+    <None Include="Shaders\ssaoVert.glsl" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\container.jpg">
