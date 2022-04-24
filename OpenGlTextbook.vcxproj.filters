@@ -45,6 +45,9 @@
     <ClCompile Include="Src\Cube.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Sphere.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\glad\include\glad\glad.h">
@@ -399,6 +402,8 @@
     <None Include="Shaders\ssaoFrag.glsl" />
     <None Include="Shaders\ssaoVert.glsl" />
     <None Include="packages.config" />
+    <None Include="Shaders\SphereVert.glsl" />
+    <None Include="Shaders\SphereFrag.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\container.jpg">

@@ -157,6 +157,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Src\Cube.cpp" />
+    <ClCompile Include="Src\Sphere.cpp" />
     <ClCompile Include="Src\stb.cpp" />
     <ClCompile Include="Src\glad.c" />
     <ClCompile Include="Src\app.cpp" />
@@ -315,6 +316,8 @@
     <None Include="Shaders\ShadowVert.glsl" />
     <None Include="Shaders\SkyFrag.glsl" />
     <None Include="Shaders\SkyVert.glsl" />
+    <None Include="Shaders\SphereFrag.glsl" />
+    <None Include="Shaders\SphereVert.glsl" />
     <None Include="Shaders\ssaoFrag.glsl" />
     <None Include="Shaders\ssaoVert.glsl" />
     <None Include="Shaders\vertShader.glsl" />
