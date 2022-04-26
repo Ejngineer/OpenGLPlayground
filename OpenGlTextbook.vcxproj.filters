@@ -80,6 +80,8 @@
     <None Include="Shaders\LightVert.glsl" />
     <None Include="Shaders\LightFrag.glsl" />
     <None Include="Shaders\ObjectVert.glsl" />
+    <None Include="Shaders\BasicShaderVert.glsl" />
+    <None Include="Shaders\BasicShaderFrag.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\container.jpg">

@@ -13,6 +13,15 @@ double lastY = 0.0;
 bool firstMouse = true;
 float fov = 45.0f;
 
+struct MVP {
+	glm::mat4 model;
+	glm::mat4 view;
+	glm::mat4 projection;
+};
+
+
+void DrawTree(float x, float y, float z, Shader& shader, unsigned int* VAO, MVP& mvp);
+
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	if (firstMouse)
@@ -121,96 +130,73 @@ int main(void)
 	/*Capture mouse in window*/
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	float vertices[] = {
-		// positions // normals // texture coords
-	   -0.5f,-0.5f,-0.5f, 0.0f, 0.0f,-1.0f, 0.0f, 0.0f,
-		0.5f,-0.5f,-0.5f, 0.0f, 0.0f,-1.0f, 1.0f, 0.0f,
-		0.5f, 0.5f,-0.5f, 0.0f, 0.0f,-1.0f, 1.0f, 1.0f,
-		0.5f, 0.5f,-0.5f, 0.0f, 0.0f,-1.0f, 1.0f, 1.0f,
-	   -0.5f, 0.5f,-0.5f, 0.0f, 0.0f,-1.0f, 0.0f, 1.0f,
-	   -0.5f,-0.5f,-0.5f, 0.0f, 0.0f,-1.0f, 0.0f, 0.0f,
-	   -0.5f,-0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-		0.5f,-0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-		0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-	   -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-	   -0.5f,-0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-	   -0.5f, 0.5f, 0.5f,-1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-	   -0.5f, 0.5f,-0.5f,-1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-	   -0.5f,-0.5f,-0.5f,-1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-	   -0.5f,-0.5f,-0.5f,-1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-	   -0.5f,-0.5f, 0.5f,-1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-	   -0.5f, 0.5f, 0.5f,-1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-		0.5f, 0.5f,-0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-		0.5f,-0.5f,-0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-		0.5f,-0.5f,-0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-		0.5f,-0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-		0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-	   -0.5f,-0.5f,-0.5f, 0.0f,-1.0f, 0.0f, 0.0f, 1.0f,
-		0.5f,-0.5f,-0.5f, 0.0f,-1.0f, 0.0f, 1.0f, 1.0f,
-		0.5f,-0.5f, 0.5f, 0.0f,-1.0f, 0.0f, 1.0f, 0.0f,
-		0.5f,-0.5f, 0.5f, 0.0f,-1.0f, 0.0f, 1.0f, 0.0f,
-	   -0.5f,-0.5f, 0.5f, 0.0f,-1.0f, 0.0f, 0.0f, 0.0f,
-	   -0.5f,-0.5f,-0.5f, 0.0f,-1.0f, 0.0f, 0.0f, 1.0f,
-	   -0.5f, 0.5f,-0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-		0.5f, 0.5f,-0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-		0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-	   -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-	   -0.5f, 0.5f, -0.5f, 0.0f,1.0f, 0.0f, 0.0f, 1.0f
+	const float Trunk[] =
+	{
+		 400.0f,  0.0f, 0.0f,
+		 450.0f,  0.0f, 0.0f,
+		 450.0f,  200.0f, 0.0f,
+
+	     400.0f, 200.0f, 0.0f,
+	     400.0f,   0.0f, 0.0f,
+	     450.0f, 200.0f, 0.0f,
+
+		 350.0f, 200.0f, 0.0f,
+		 500.0f, 200.0f, 0.0f,
+		 500.0f, 350.0f, 0.0f,
+
+		 500.0f, 350.0f, 0.0f,
+		 350.0f, 350.0f, 0.0f,
+		 350.0f, 200.0f, 0.0f
 	};
 
-	glm::vec3 cubePositions[] = {
-		glm::vec3(0.0f, 0.0f, 0.0f),
-		glm::vec3(0.0f, 0.0f, -3.0f),
-		glm::vec3(-1.5f, -2.2f, -2.5f),
-		glm::vec3(-3.8f, -2.0f, -12.3f),
-		glm::vec3(2.4f, -0.4f, -3.5f),
-		glm::vec3(-1.7f, 3.0f, -7.5f),
-		glm::vec3(1.3f, -2.0f, -2.5f),
-		glm::vec3(1.5f, 2.0f, -2.5f),
-		glm::vec3(1.5f, 0.2f, -1.5f),
-		glm::vec3(-1.3f, 1.0f, -1.5f)
+	const float quadVertices[] =
+	{
+		0.0f,   0.0f,   0.0f,
+		800.0f, 0.0f,   0.0f,
+		800.0f, 200.0f, 0.0f,
+
+		800.0f, 200.0f, 0.0f,
+		0.0f,   200.0f, 0.0f,
+		0.0f, 0.0f,   0.0f
+
+		//-800.0f, -200.0f, 0.0f,
+		// 800.0f, -200.0f, 0.0f, 
+		// 800.0f,  200.0f, 0.0f,
+
+		// 800.0f,  200.0f, 0.0f,
+		//-800.0f,  200.0f, 0.0f,
+		//-800.0f, -200.0f, 0.0f
 	};
 
-	/*Buffers*/
-	VertexBuffer VBO(vertices, sizeof(vertices));
-	VBO.UnBind();
-	VertexArray lightVAO;
-	VBO.Bind();
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	unsigned int VAO[2];
+	unsigned int VBO[2];
+
+	glGenVertexArrays(2, VAO);
+	glGenBuffers(2, VBO);
+
+	glBindVertexArray(VAO[0]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Trunk), Trunk, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	lightVAO.UnBind();
-	VBO.UnBind();
 
-	VertexArray objVAO;
-	VBO.Bind();
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glBindVertexArray(VAO[1]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+
+	Shader shader_tri("shaders/basicshadervert.glsl", "shaders/basicshaderfrag.glsl");
+	Shader shader_quad("shaders/basicshadervert.glsl", "shaders/basicshaderfrag.glsl");
+
+	bool first = true;
+
 	
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-	
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-	objVAO.UnBind();
-	//VBO.UnBind();
-
-	VertexArray VAOarr[] = {lightVAO, objVAO};
-
-	Shader lightShader("Shaders/LightVert.glsl", "Shaders/LightFrag.glsl");
-
-
-	glm::vec3 LightSource(1.0f, 1.0f, 1.0f);
-	glm::vec3 Toy(1.0f, 0.5f, 0.31f);
-	glm::vec3 result = LightSource * Toy;
-
-	Shader ObjectShader("Shaders/ObjectVert.glsl", "Shaders/ObjectFrag.glsl");
-	
-	glm::vec3 Colors[] = {LightSource, result}; 
-
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
@@ -218,56 +204,37 @@ int main(void)
 		float currentFrame = (float)glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-
-		float lightMove = 2*sin(glfwGetTime());
-
-		glm::vec3 lightPos(lightMove, 1.0f, 2.0f);
-
-		glm::mat4 lightmodel = glm::mat4(1.0f);
-		lightmodel = glm::translate(lightmodel, lightPos);
-		lightmodel = glm::scale(lightmodel, glm::vec3(0.2f));
-
-		/* Render here */
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+		
 		ProcessKeyInput(window, deltaTime);
 
-		/*Object model matrix*/
-		glm::mat4 model = glm::mat4(1.0f);
+		glClearColor(0.2f, 0.8f, 0.8f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		/*object/light view*/
-		glm::mat4 view = glm::mat4(1.0f);
-		view = camera.GetViewMatrix();
-		
-		/*object/light projection*/
-		glm::mat4 projection;
-		projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.0f);
-		
-		lightVAO.Bind();
-		lightShader.use();
+		shader_tri.use();
 
-		lightShader.setMat4f("model", lightmodel);
-		lightShader.setMat4f("view", view);
-		lightShader.setMat4f("projection", projection);
+		MVP mvp;
 
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		lightVAO.UnBind();
+		mvp.model = glm::mat4(1.0f);
+		mvp.view =  glm::mat4(1.0f);
+		mvp.view = glm::translate(mvp.view, glm::vec3(0.0f, 0.0f, -1.0f));
+		//view = camera.GetViewMatrix();
+		//glm::mat4 projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.0f);
+		mvp.projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 1.0f, 100.0f);
 
-		/*Object Rendering*/
-		objVAO.Bind();
-		ObjectShader.use();;
-		ObjectShader.setVec3f("lightColor", LightSource);
-		ObjectShader.setVec3f("objectColor", Toy);
-		ObjectShader.setVec3f("lightPos", lightPos);
+		DrawTree(0.0f, 100.0f, 0.0f, shader_tri, VAO, mvp);
+		DrawTree(150.0f, 25.0f, 0.0f, shader_tri, VAO, mvp);
+		DrawTree(-250.0f, 50.0f, 0.0f, shader_tri, VAO, mvp);
 
-		ObjectShader.setMat4f("model", model);
-		ObjectShader.setMat4f("view", view);
-		ObjectShader.setMat4f("projection", projection);
-
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		objVAO.UnBind();
-		
+		mvp.model = glm::translate(mvp.model, glm::vec3(0.0f, 0.0f, 0.0f));
+		mvp.model = glm::scale(mvp.model, glm::vec3(1.0f));
+		mvp.model = glm::mat4(1.0f);
+		shader_tri.setMat4f("model", mvp.model);
+		shader_tri.setMat4f("view", mvp.view);
+		shader_tri.setMat4f("projection", mvp.projection);
+		shader_tri.setVec3f("Color", glm::vec3(0.0f, 0.2f, 0.0f));
+		glBindVertexArray(VAO[1]);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glBindVertexArray(0);
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
@@ -278,4 +245,35 @@ int main(void)
 
 	glfwTerminate();
 	return 0;
+}
+
+
+
+void DrawTree(float x, float y, float z, Shader& shader, unsigned int* VAO, MVP& mvp)
+{
+	mvp.model = glm::mat4(1.0f);
+	mvp.model = glm::translate(mvp.model, glm::vec3(x, y, z));
+	shader.use();
+	shader.setMat4f("model", mvp.model);
+	shader.setMat4f("view", mvp.view);
+	shader.setMat4f("projection", mvp.projection);
+	shader.setVec3f("Color", glm::vec3(0.35f, 0.25f, 0.12f));
+
+	glBindVertexArray(VAO[0]);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	shader.setVec3f("Color", glm::vec3(0.0f, 0.5f, 0.0f));
+	glDrawArrays(GL_TRIANGLES, 6, 6);
+	glBindVertexArray(0);
+
+	/*mvp.model = glm::mat4(1.0f);
+	mvp.model = glm::translate(mvp.model, glm::vec3(x - 0.59f, y, z + 0.1f));
+	mvp.model = glm::scale(mvp.model, glm::vec3(0.5f));
+	shader.setMat4f("model", mvp.model);
+	shader.setMat4f("view", mvp.view);
+	shader.setMat4f("projection", mvp.projection);
+	shader.setVec3f("Color", glm::vec3(0.0f, 0.8f, 0.0f));
+
+	glBindVertexArray(VAO[1]);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glBindVertexArray(0);*/
 }
