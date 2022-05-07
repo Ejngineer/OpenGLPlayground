@@ -55,6 +55,60 @@ void Sphere::Draw()
 
 void Sphere::buildSmooth()
 {
+	const float PI = acos(-1);
+	float x, y, z, s, t, xy;
+	float nx, ny, nz, lengthInv = 1.0f / radius;
+
+	float sectorStep = 2 * PI / sectors;
+	float stackStep = PI / stacks;
+
+	float sectorAngle, stackAngle;
+
+	for (int i = 0; i <= stacks; i++)
+	{
+		stackAngle = PI / 2 - i * stackStep;
+		xy = radius * cosf(stackAngle);
+		z = radius * sinf(stackAngle);
+		for (int j = 0; j <= sectors; j++)
+		{
+			sectorAngle = j * sectorStep;
+
+			x = xy * cosf(sectorAngle);
+			y = xy * sinf(sectorAngle);
+			addVertex(x, y, z);
+
+			nx = x * lengthInv;
+			ny = y * lengthInv;
+			nz = z * lengthInv;
+			addNormal(nx, ny, nz);
+
+			s = (float)j / sectors;
+			t = (float)i / stacks;
+			addTexCoords(s, t);
+		}
+	}
+
+	int i, j;
+	unsigned int k1, k2;
+	for (i = 0; i < stacks; i++)
+	{
+		k1 = i * (sectors + 1);
+		k2 = k1 + (sectors + 1);
+
+		for (j = 0; j < sectors; j++, k1++, k2++)
+		{
+			if (i != 0)
+			{
+				addIndices(k1, k2, k1 + 1);
+			}
+			if (i != (stacks - 1))
+			{
+				addIndices(k1 + 1, k2, k2 + 1);
+			}
+		}
+	}
+	buildInterleavedVertices();
+	setupSphere();
 }
 
 void Sphere::buildFlat()

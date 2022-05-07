@@ -124,7 +124,7 @@ int main(void)
 	glEnable(GL_DEPTH_TEST);
 
 	//Enable Gamma correction
-	//glEnable(GL_FRAMEBUFFER_SRGB);
+	glEnable(GL_FRAMEBUFFER_SRGB);
 
 	//Enable Multi-Sampling
 	glEnable(GL_MULTISAMPLE);
@@ -142,6 +142,32 @@ int main(void)
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	glEnable(GL_TEXTURE_2D);
+
+	Sphere sphere(1.0f, 144, 144);
+	Shader shader("shaders/PBRvert.glsl", "shaders/PBRfrag.glsl");
+	//Shader shader("shaders/spherevert.glsl", "shaders/spherefrag.glsl");
+
+	glm::vec3 lightPositions[] =
+	{
+		glm::vec3( 1.0f, 1.0f, 50.0f),
+		glm::vec3( 3.0f,-3.0f, 50.0f),
+		glm::vec3( 3.0f, 3.0f, 50.0f),
+		glm::vec3(-3.0f, 3.0f, 50.0f),
+	};
+
+	glm::vec3 lightColors[] =
+	{
+		glm::vec3(300.0f,300.0f,300.0f),
+		glm::vec3(300.0f,300.0f,300.0f),
+		glm::vec3(300.0f,300.0f,300.0f),
+		glm::vec3(300.0f,300.0f,300.0f),
+	};
+
+	int nrRows = 7;
+	int nrColumns = 7;
+	float spacing = 2.5f;
+
+
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
@@ -156,15 +182,32 @@ int main(void)
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glm::mat4 model(1.0f);
-		//model = glm::rotate(model, (float)glfwGetTime(), glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f)));
-		std::cout << glfwGetTime() << std::endl;
-		model = glm::rotate(model, 5.0f, glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f)));
-		model = glm::rotate(model, -(float)glfwGetTime() * 0.1f, glm::normalize(glm::vec3(0.0f, 0.0f, 1.0f)));
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
 		glm::mat4 view = camera.GetViewMatrix();
 		glm::mat4 projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.f);
-		/*VAO.Bind();
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		VAO.UnBind();*/
+	
+		shader.use();
+		shader.setMat4f("model", model);
+		shader.setMat4f("view", view);
+		shader.setMat4f("projection", projection);
+		shader.setVec3f("albedo", glm::vec3(0.5f, 0.0f,0.0f));
+		shader.setFloat1f("metallic", 0.9f);
+		shader.setFloat1f("roughness", 0.05f);
+		shader.setFloat1f("ao", 0.2f);
+		shader.setVec3f("camPos", camera.GetPosition());
+		sphere.Draw();
+
+		for (int i = 0; i < 1; i++)
+		{
+			shader.setVec3f("lightPositions[" + std::to_string(i) + "]", lightPositions[i]);
+			shader.setVec3f("lightColors[" + std::to_string(i) + "]", lightColors[i]);
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, lightPositions[i]);
+			model = glm::scale(model, glm::vec3(0.5f));
+			shader.setMat4f("model", model);
+			shader.setVec3f("albedo", lightColors[i]);
+			sphere.Draw();
+		}
 
 		glfwSwapBuffers(window);
 

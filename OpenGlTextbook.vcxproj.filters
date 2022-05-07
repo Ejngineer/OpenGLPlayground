@@ -404,6 +404,8 @@
     <None Include="packages.config" />
     <None Include="Shaders\SphereVert.glsl" />
     <None Include="Shaders\SphereFrag.glsl" />
+    <None Include="Shaders\PBRFrag.glsl" />
+    <None Include="Shaders\PBRVert.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\container.jpg">

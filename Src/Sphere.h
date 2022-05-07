@@ -9,7 +9,7 @@
 class Sphere
 {
 public:
-	Sphere( float radius = 1.0f,  int sectors = 3, int stacks = 2, bool smooth = false);
+	Sphere( float radius = 1.0f,  int sectors = 3, int stacks = 2, bool smooth = true);
 	~Sphere() = default;
 	void setSphere(float radius, int sectors, int stacks, bool smooth);
 	void Draw();
