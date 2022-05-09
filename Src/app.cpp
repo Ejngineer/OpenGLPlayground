@@ -93,7 +93,7 @@ int main(void)
 	glfwWindowHint(GLFW_SAMPLES, 4);
 
 	/* Create a windowed mode window and its OpenGL context */
-	window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
+	window = glfwCreateWindow(1200, 900, "LearnOpenGL", NULL, NULL);
 	if (!window)
 	{
 		std::cout << "Failed to create GLFW Window." << std::endl;
@@ -112,7 +112,7 @@ int main(void)
 	}
 
 	/*Set size of window where our graphics will be shown*/
-	glViewport(0, 0, 800, 600);
+	glViewport(0, 0, 1200, 900);
 
 	/*Let GLFW know we want to resize our viewport if the window is resized*/
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -122,15 +122,6 @@ int main(void)
 
 	//Enable opengl depth-testing
 	glEnable(GL_DEPTH_TEST);
-
-	//Enable Gamma correction
-	glEnable(GL_FRAMEBUFFER_SRGB);
-
-	//Enable Multi-Sampling
-	glEnable(GL_MULTISAMPLE);
-
-	//Enable face culling
-	//glEnable(GL_CULL_FACE);
 
 	/*Set callback for cursor controls*/
 	glfwSetCursorPosCallback(window, mouse_callback);
@@ -145,11 +136,37 @@ int main(void)
 
 	Sphere sphere(1.0f, 144, 144);
 	Shader shader("shaders/PBRvert.glsl", "shaders/PBRfrag.glsl");
-	//Shader shader("shaders/spherevert.glsl", "shaders/spherefrag.glsl");
+	Shader shader1("shaders/spherevert.glsl", "shaders/spherefrag.glsl");
+
+	stbi_set_flip_vertically_on_load(1);
+
+	Texture ironalbedo;
+	Texture ironnorm;
+	Texture ironao;
+	Texture ironrough;
+	Texture ironmetallic;
+
+	ironalbedo.Bind2D();
+	ironalbedo.LoadTexture2D("textures/pbr/albedo.png");
+	ironnorm.Bind2D();
+	ironnorm.LoadTexture2D("textures/pbr/normal.png");
+	ironmetallic.Bind2D();
+	ironmetallic.LoadTexture2D("textures/pbr/metallic.png");
+	ironrough.Bind2D();
+	ironrough.LoadTexture2D("textures/pbr/roughness.png");
+	ironao.Bind2D();
+	ironao.LoadTexture2D("textures/pbr/ao.png");
+
+	shader.use();
+	shader.setInt("Albedo", 0);
+	shader.setInt("normalMap", 1);
+	shader.setInt("Metallic", 2);
+	shader.setInt("Roughness", 3);
+	shader.setInt("AO", 4);
 
 	glm::vec3 lightPositions[] =
 	{
-		glm::vec3( 1.0f, 1.0f, 50.0f),
+		glm::vec3( 0.0f, 0.0f, 10.0f),
 		glm::vec3( 3.0f,-3.0f, 50.0f),
 		glm::vec3( 3.0f, 3.0f, 50.0f),
 		glm::vec3(-3.0f, 3.0f, 50.0f),
@@ -157,10 +174,10 @@ int main(void)
 
 	glm::vec3 lightColors[] =
 	{
-		glm::vec3(300.0f,300.0f,300.0f),
-		glm::vec3(300.0f,300.0f,300.0f),
-		glm::vec3(300.0f,300.0f,300.0f),
-		glm::vec3(300.0f,300.0f,300.0f),
+		glm::vec3(250.0f,250.0f,250.0f),
+		glm::vec3(150.0f,150.0f,150.0f),
+		glm::vec3(150.0f,150.0f,150.0f),
+		glm::vec3(150.0f,150.0f,150.0f),
 	};
 
 	int nrRows = 7;
@@ -183,31 +200,53 @@ int main(void)
 
 		glm::mat4 model(1.0f);
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		glm::mat4 view = camera.GetViewMatrix();
-		glm::mat4 projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.f);
+		glm::mat4 projection = glm::perspective(glm::radians(fov), 1200.0f / 900.0f, 0.1f, 100.f);
 	
 		shader.use();
 		shader.setMat4f("model", model);
 		shader.setMat4f("view", view);
 		shader.setMat4f("projection", projection);
-		shader.setVec3f("albedo", glm::vec3(0.5f, 0.0f,0.0f));
-		shader.setFloat1f("metallic", 0.9f);
-		shader.setFloat1f("roughness", 0.05f);
-		shader.setFloat1f("ao", 0.2f);
+		//shader.setVec3f("Albedo", glm::vec3(0.5f, 0.0f,0.0f));
+		//shader.setFloat1f("Metallic", 0.2f);
+		//shader.setFloat1f("Roughness", 0.2f);
+		//shader.setFloat1f("AO", 0.2f);
 		shader.setVec3f("camPos", camera.GetPosition());
+
+		/*Setup textures*/
+		ironalbedo.ActivateTexture(0);
+		ironalbedo.Bind2D();
+		ironnorm.ActivateTexture(1);
+		ironnorm.Bind2D();
+		ironmetallic.ActivateTexture(2);
+		ironmetallic.Bind2D();
+		ironrough.ActivateTexture(3);
+		ironrough.Bind2D();
+		ironao.ActivateTexture(4);
+		ironao.Bind2D();
+
 		sphere.Draw();
 
 		for (int i = 0; i < 1; i++)
 		{
-			shader.setVec3f("lightPositions[" + std::to_string(i) + "]", lightPositions[i]);
+			float lightPos = lightPositions[i].x;// +sinf(glfwGetTime()) * 5.0f;
+			shader.setVec3f("lightPositions[" + std::to_string(i) + "]", glm::vec3(lightPos, lightPositions[i].y, lightPositions[i].z));
 			shader.setVec3f("lightColors[" + std::to_string(i) + "]", lightColors[i]);
 			model = glm::mat4(1.0f);
-			model = glm::translate(model, lightPositions[i]);
+			model = glm::translate(model, glm::vec3(lightPos, lightPositions[i].y, lightPositions[i].z));
 			model = glm::scale(model, glm::vec3(0.5f));
-			shader.setMat4f("model", model);
-			shader.setVec3f("albedo", lightColors[i]);
-			sphere.Draw();
+			//shader.setMat4f("model", model);
+			//shader.setVec3f("Albedo", lightColors[i]);
+			//sphere.Draw();
 		}
+
+		//shader1.use();
+		//model = glm::mat4(1.0f);
+		//shader1.setMat4f("model", model);
+		//shader1.setMat4f("view", view);
+		//shader1.setMat4f("projection", projection);
+		//sphere.Draw();
 
 		glfwSwapBuffers(window);
 

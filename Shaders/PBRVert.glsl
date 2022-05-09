@@ -6,7 +6,7 @@ layout (location = 2) in vec2 aTexCoords;
 
 out vec2 TexCoords;
 out vec3 Normal;
-out vec3 WorldSpace;
+out vec3 WorldPos;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -14,7 +14,7 @@ uniform mat4 projection;
 
 void main()
 {
-	WorldSpace = vec3(model * vec4(aPos, 1.0));
+	WorldPos = vec3(model * vec4(aPos, 1.0));
 	mat3 NormalMatrix = transpose(inverse(mat3(model)));
 	Normal = mat3(model) *  aNormal;
 	TexCoords = aTexCoords;
