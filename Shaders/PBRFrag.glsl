@@ -6,6 +6,10 @@ in vec2 TexCoords;
 in vec3 Normal;
 in vec3 WorldPos;
 
+uniform samplerCube irradianceMap;
+uniform samplerCube prefilterMap;
+uniform sampler2D brdfLUT;
+
 uniform vec3 camPos;
 
 uniform sampler2D Albedo;
@@ -14,6 +18,8 @@ uniform sampler2D Metallic;
 uniform sampler2D Roughness;
 uniform sampler2D AO;
 
+uniform float Divisions;
+
 uniform vec3 lightPositions[4];
 uniform vec3 lightColors[4];
 
@@ -21,7 +27,7 @@ const float PI = 3.14159265359;
 
 vec3 getNormalFromMap()
 {
-    vec3 tangentNormal = texture(normalMap, TexCoords).xyz * 2.0 - 1.0;
+    vec3 tangentNormal = texture(normalMap, TexCoords * Divisions).xyz * 2.0 - 1.0;
 
     vec3 Q1  = dFdx(WorldPos);
     vec3 Q2  = dFdy(WorldPos);
@@ -54,6 +60,11 @@ vec3 Fresnel(float HdotV, vec3 F0)
 	return F0 + (1.0 - F0) * pow(clamp(1.0 - (HdotV),0.0,1.0), 5.0);
 }
 
+vec3 FresnelRoughness(float cosTheta, vec3 F0, float roughness)
+{
+	return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+}
+
 float GGX_sub(vec3 N, vec3 V, float roughness)
 {
 	float r = (roughness + 1.0);
@@ -77,10 +88,16 @@ void main()
 	vec3 N = getNormalFromMap();
 	vec3 V = normalize(camPos - WorldPos);
 
-	vec3 albedo = pow(texture(Albedo, TexCoords).rgb, vec3(2.2));
-	float metallic = texture(Metallic, TexCoords).r;
-	float ao = texture(AO, TexCoords).r;
-	float textroughness = texture(Roughness, TexCoords).r;
+
+	vec3 albedo = pow(texture(Albedo, TexCoords * Divisions).rgb, vec3(2.2));
+	float metallic = texture(Metallic, TexCoords * Divisions).r;
+	float ao = texture(AO, TexCoords * Divisions).r;
+	float textroughness = texture(Roughness, TexCoords * Divisions).r;
+
+	float eta = 1.00 / 1.52;
+	vec3 R = reflect(-V, N);
+	const float MAX_REFLECTION_LOD = 4.0;
+	vec3 prefiltercolor = textureLod(prefilterMap, R  * Divisions, textroughness * MAX_REFLECTION_LOD).rgb;
 
 	vec3 L;
 	vec3 H;
@@ -133,7 +150,18 @@ void main()
 		Lo += (Kd * albedo / PI + specular) * radiance * NdotL;
 	}
 
-	vec3 ambient = vec3(0.03) * albedo * ao;
+	F = FresnelRoughness(max(dot(N,V), 0.0), F0, textroughness);
+	Ks = F;
+	Kd = vec3(1.0) - Ks;
+	Kd *= 1.0 - metallic;
+	vec3 irradiance = texture(irradianceMap, N  * Divisions).rgb;
+	vec3 diffuse = irradiance * albedo;
+
+	vec2 envBRDF = texture(brdfLUT, vec2(max(dot(N, V), 0.0) * Divisions, textroughness)).rg;
+	specular = prefiltercolor * (F * envBRDF.x + envBRDF.y);
+
+	vec3 ambient = (Kd * diffuse + specular) * ao;
+
 	vec3 color = ambient + Lo;
 
 	color = color / (color + vec3(1.0));

@@ -16,6 +16,7 @@ public:
 	~Texture();
 	void LoadTexture2D(const char* TexturePath);
 	void LoadCubeMap(const std::vector<std::string> faces);
+	void LoadHdrMap(const std::string& TexturePath);
 	void ActivateTexture(int tex_idx);
 	void EnableVertFlip();
 	void DisableVertFlip();

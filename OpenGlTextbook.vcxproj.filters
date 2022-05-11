@@ -406,6 +406,15 @@
     <None Include="Shaders\SphereFrag.glsl" />
     <None Include="Shaders\PBRFrag.glsl" />
     <None Include="Shaders\PBRVert.glsl" />
+    <None Include="Shaders\HDRVERT.glsl" />
+    <None Include="Shaders\HDRFRAG.glsl" />
+    <None Include="Shaders\CubeMapVert.glsl" />
+    <None Include="Shaders\cubeMapFrag.glsl" />
+    <None Include="Shaders\ConvolutionVert.glsl" />
+    <None Include="Shaders\ConvolutionFrag.glsl" />
+    <None Include="Shaders\preFilterFrag.glsl" />
+    <None Include="Shaders\brdfFrag.glsl" />
+    <None Include="Shaders\brdfVert.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\container.jpg">

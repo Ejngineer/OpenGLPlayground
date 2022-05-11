@@ -75,6 +75,27 @@ void Texture::LoadCubeMap(const std::vector<std::string> faces)
 
 }
 
+void Texture::LoadHdrMap(const std::string& TexturePath)
+{
+	int width, height, nrcomponents;
+	float *data = stbi_loadf(TexturePath.c_str(), &width, &height, &nrcomponents, 0);
+
+	if (data)
+	{
+		Bind2D();
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, data);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	}
+	else
+	{
+		std::cout << "FAILED TO LOAD HDR TEXTURE." << std::endl;
+	}
+	stbi_image_free(data);
+}
+
 void Texture::ActivateTexture(int tex_idx)
 {
 	glActiveTexture(GL_TEXTURE0 + tex_idx);
@@ -93,6 +114,11 @@ void Texture::DisableVertFlip()
 void Texture::BindCM()
 {
 	glBindTexture(GL_TEXTURE_CUBE_MAP, m_ID);
+}
+
+void Texture::unBind()
+{
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Texture::Bind2D()
